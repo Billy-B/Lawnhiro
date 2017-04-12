@@ -1,0 +1,4 @@
+C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\bin\Release\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\bin\Release\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\obj\Release\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\obj\Release\DatabaseManagement.pdb

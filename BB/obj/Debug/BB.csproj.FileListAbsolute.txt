@@ -1,0 +1,15 @@
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Debug\BB.dll
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Debug\BB.pdb
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Debug\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Debug\Mono.Reflection.dll
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Debug\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\obj\Debug\BB.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\obj\Debug\BB.dll
+C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\obj\Debug\BB.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Debug\BB.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Debug\BB.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Debug\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Debug\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Debug\BB.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Debug\BB.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Debug\BB.pdb

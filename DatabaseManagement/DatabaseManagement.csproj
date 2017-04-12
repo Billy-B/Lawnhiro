@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2DA90531-C9AA-4DEB-ADF7-3908CFDF55A5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DatabaseManagement</RootNamespace>
+    <AssemblyName>DatabaseManagement</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DatabaseIntegrityException.cs" />
+    <Compile Include="DatabaseManager.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="ForeignKeyRule.cs" />
+    <Compile Include="GenericCollection.cs" />
+    <Compile Include="IColumn.cs" />
+    <Compile Include="IDatabase.cs" />
+    <Compile Include="IForeignKeyConstraint.cs" />
+    <Compile Include="ISchemaObject.cs" />
+    <Compile Include="ITable.cs" />
+    <Compile Include="ITableConstraint.cs" />
+    <Compile Include="IUniqueConstraint.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadOnlyList.cs" />
+    <Compile Include="SchemaObjectType.cs" />
+    <Compile Include="SqlServer\Column.cs" />
+    <Compile Include="SqlServer\ForeignKeyColumnMapping.cs" />
+    <Compile Include="SqlServer\TableColumnCollection.cs" />
+    <Compile Include="SqlServer\Database.cs" />
+    <Compile Include="SqlServer\ForeignKeyConstraint.cs" />
+    <Compile Include="SqlServer\MappingQueries.cs" />
+    <Compile Include="SqlServer\Schema.cs" />
+    <Compile Include="SqlServer\DatabaseSchemaCollection.cs" />
+    <Compile Include="SqlServer\SchemaLevelCollection.cs" />
+    <Compile Include="SqlServer\SchemaObject.cs" />
+    <Compile Include="SqlServer\Table.cs" />
+    <Compile Include="SqlServer\TableConstraint.cs" />
+    <Compile Include="SqlServer\UniqueConstraint.cs" />
+    <Compile Include="SqlServer\UniqueConstraintColumnMapping.cs" />
+    <Compile Include="SqlServer\View.cs" />
+    <Compile Include="SQL\BinaryComparisonExpression.cs" />
+    <Compile Include="SQL\ConditionalExpression.cs" />
+    <Compile Include="SQL\Clause.cs" />
+    <Compile Include="SQL\ColumnAccessExpression.cs" />
+    <Compile Include="SQL\Command.cs" />
+    <Compile Include="SQL\ConstantExpression.cs" />
+    <Compile Include="SQL\DeleteStatement.cs" />
+    <Compile Include="SQL\Expression.cs" />
+    <Compile Include="SQL\ExpressionType.cs" />
+    <Compile Include="SQL\FieldAccessExpression.cs" />
+    <Compile Include="SQL\Function.cs" />
+    <Compile Include="SQL\FunctionParameter.cs" />
+    <Compile Include="SQL\Functions.cs" />
+    <Compile Include="SQL\InsertClause.cs" />
+    <Compile Include="SQL\InsertStatement.cs" />
+    <Compile Include="SQL\JoinedTableExpression.cs" />
+    <Compile Include="SQL\LogicalBinaryExpression.cs" />
+    <Compile Include="SQL\LogicalUnaryExpression.cs" />
+    <Compile Include="SQL\ScalarBinaryExpression.cs" />
+    <Compile Include="SQL\OutputClause.cs" />
+    <Compile Include="SQL\ParameterExpression.cs" />
+    <Compile Include="SQL\ScalarExpression.cs" />
+    <Compile Include="SQL\ScalarFunction.cs" />
+    <Compile Include="SQL\ScalarUnaryExpression.cs" />
+    <Compile Include="SQL\SelectStatement.cs" />
+    <Compile Include="SQL\SetClause.cs" />
+    <Compile Include="SQL\Statement.cs" />
+    <Compile Include="SQL\TableExpression.cs" />
+    <Compile Include="SQL\TableValuedExpression.cs" />
+    <Compile Include="SQL\UpdateStatement.cs" />
+    <Compile Include="TypeConverter.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="ViewCheckOption.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
