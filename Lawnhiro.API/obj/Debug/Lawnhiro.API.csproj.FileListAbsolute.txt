@@ -9,3 +9,13 @@ C:\Users\Ryker\Documents\Visual Studio 2015\Projects\Lawnhiro\Lawnhiro.API\bin\D
 C:\Users\Ryker\Documents\Visual Studio 2015\Projects\Lawnhiro\Lawnhiro.API\bin\Debug\BB.pdb
 C:\Users\Ryker\Documents\Visual Studio 2015\Projects\Lawnhiro\Lawnhiro.API\bin\Debug\DatabaseManagement.pdb
 C:\Users\Ryker\Documents\Visual Studio 2015\Projects\Lawnhiro\Lawnhiro.API\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\Lawnhiro.API.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\Lawnhiro.API.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\BB.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\Mono.Reflection.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\BB.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\bin\Debug\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\obj\Debug\Lawnhiro.API.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\obj\Debug\Lawnhiro.API.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro.API\obj\Debug\Lawnhiro.API.pdb
