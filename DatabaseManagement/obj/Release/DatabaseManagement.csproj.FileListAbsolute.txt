@@ -2,3 +2,13 @@ C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\bin
 C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\bin\Release\DatabaseManagement.pdb
 C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\obj\Release\DatabaseManagement.dll
 C:\Users\Ryker\Documents\Visual Studio 2012\Projects\MGMT\DatabaseManagement\obj\Release\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.Smo.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.Management.Sdk.Sfc.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.ConnectionInfo.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.SqlEnum.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.Dmf.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.ServiceBrokerEnum.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Release\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Release\DatabaseManagement.pdb

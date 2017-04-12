@@ -48,7 +48,7 @@ namespace BB
                         if (constraint == null)
                         {
                             isValid = false;
-                            _initErrorMessage = "Multiple foreign key constraints on table " + Table + " reference table " + referencedTable + ", none of which are named " + Property.Name + ". Must provide name of foreign key in the ForeignKeyAttribute.";
+                            _initErrorMessage = "Multiple foreign key constraints on table " + Table + " reference table " + referencedTable + ", none of which are named ";// + Property.Name + ". Must provide name of foreign key in the ForeignKeyAttribute.";
                         }
                         else
                         {

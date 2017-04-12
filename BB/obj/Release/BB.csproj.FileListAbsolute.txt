@@ -6,3 +6,10 @@ C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Release\Mono.Refl
 C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\bin\Release\DatabaseManagement.pdb
 C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\obj\Release\BB.dll
 C:\Users\Ryker\Documents\Visual Studio 2013\Projects\BB\BB\obj\Release\BB.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Release\BB.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Release\BB.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Release\DatabaseManagement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\bin\Release\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Release\BB.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Release\BB.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB\obj\Release\BB.pdb
