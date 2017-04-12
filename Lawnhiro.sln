@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 14 for Web
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lawnhiro", "Lawnhiro\Lawnhiro.csproj", "{04441752-EE65-4665-ADF6-9459522E2397}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lawnhiro.API", "Lawnhiro.API\Lawnhiro.API.csproj", "{65BBA759-3CD3-4BD4-AB05-A9D58E7D9187}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BB", "..\..\Visual Studio 2013\Projects\BB\BB\BB.csproj", "{75B58125-F9F3-432A-A799-CCBA9BBA8950}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04441752-EE65-4665-ADF6-9459522E2397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04441752-EE65-4665-ADF6-9459522E2397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04441752-EE65-4665-ADF6-9459522E2397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04441752-EE65-4665-ADF6-9459522E2397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65BBA759-3CD3-4BD4-AB05-A9D58E7D9187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65BBA759-3CD3-4BD4-AB05-A9D58E7D9187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65BBA759-3CD3-4BD4-AB05-A9D58E7D9187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65BBA759-3CD3-4BD4-AB05-A9D58E7D9187}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75B58125-F9F3-432A-A799-CCBA9BBA8950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75B58125-F9F3-432A-A799-CCBA9BBA8950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75B58125-F9F3-432A-A799-CCBA9BBA8950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75B58125-F9F3-432A-A799-CCBA9BBA8950}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
