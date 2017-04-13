@@ -6,7 +6,7 @@
 <head runat="server">
     <title></title>
 </head>
-<body style="background-image: url(../Images/background.jpg)">
+<body style="background-color:transparent">
     <form id="form1" runat="server">
         <div>
             <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY&v=3.exp&sensor=false&libraries=places"></script>
@@ -85,7 +85,7 @@
 
                 }, '#paypal_button');
             </script>
-            <div style="background-color: white; background-image:url(../images/background.png)">
+            <%--<div style="background-color: white;">
                 <img src="../Images/lawnhiro_logo.png" alt="Lawnhiro" style="margin: auto auto;" />
             </div>
             <div style="color:white">
@@ -105,7 +105,7 @@
                 2. Light trim around structures
                 <br />
                 3. Blow grass clippings off driveways and sidewalks
-                <br />
+                <br />--%>
                 <div>
                     <b>Select your address:   </b>
                     <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" />
