@@ -85,27 +85,6 @@
 
                 }, '#paypal_button');
             </script>
-            <%--<div style="background-color: white;">
-                <img src="../Images/lawnhiro_logo.png" alt="Lawnhiro" style="margin: auto auto;" />
-            </div>
-            <div style="color:white">
-                Ordering a Lawnhiro is easy as
-                <br />
-                A. Enter an address below to reveal your custom price
-                <br />
-                B. Add to cart
-                <br />
-                C. PayPal and you're done.
-                <br />
-                <br />
-                *Every order receives:
-                <br />
-                1. Grass cut to 4"
-                <br />
-                2. Light trim around structures
-                <br />
-                3. Blow grass clippings off driveways and sidewalks
-                <br />--%>
                 <div>
                     <b>Select your address:   </b>
                     <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" />
@@ -144,14 +123,11 @@
                     <div id="paypal_button">
                     </div>
                     <%--<asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />--%>
-                    <br />
-                    *Price is calculated by using Zillow® home data to determine how big your lawn is.
                 </div>
             </div>
             <asp:HiddenField ID="addressData" runat="server" ClientIDMode="Static" />
             <asp:HiddenField ID="paypalOrderId" runat="server" ClientIDMode="Static" OnValueChanged="paypalOrderId_ValueChanged" />
             <asp:HiddenField ID="priceField" runat="server" ClientIDMode="Static" />
-        </div>
     </form>
 </body>
 </html>

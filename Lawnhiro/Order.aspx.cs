@@ -71,7 +71,7 @@ namespace Lawnhiro
                 decimal price = ZillowResidenceInfo.CalculatePrice(residenceInfo);
                 priceField.Value = price.ToString();
                 Price = price;
-                label_price.Text = "Get you lawn mowed for " + price.ToString("C") + "*";
+                label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
                 SelectedResidenceInfo = residenceInfo;
                 Residence[] allResidences = Repository.Query<Residence>().ToArray();
                 Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == place.PlaceId);
