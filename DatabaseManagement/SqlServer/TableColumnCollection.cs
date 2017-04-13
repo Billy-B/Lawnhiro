@@ -33,39 +33,43 @@ namespace DatabaseManagement.SqlServer
             get { return _columns.Length; }
         }
 
+        public Column GetColumnOrNull(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+            string[] splitIntoParts = name.SplitQualifiedNameIntoParts();
+            string columnName;
+            if (splitIntoParts.Length == 1)
+            {
+                columnName = splitIntoParts[0];
+            }
+            else
+            {
+                columnName = splitIntoParts.Last();
+                string qualifier = string.Join(".", splitIntoParts.Take(splitIntoParts.Length - 2));
+                Table qualifiedTable = Table.Schema.Database.GetObjectOrNull(qualifier) as Table;
+                if (qualifiedTable != Table)
+                {
+                    throw new ArgumentException("The qualifier provided on argument \"" + name + "\" does not match table " + Table + ".");
+                }
+            }
+            Column ret;
+            _nameIndexed.TryGetValue(columnName, out ret);
+            return ret;
+        }
+
         public Column this[string name]
         {
             get
             {
-                if (name == null)
-                {
-                    throw new ArgumentNullException("name");
-                }
-                string[] splitIntoParts = name.SplitQualifiedNameIntoParts();
-                string columnName;
-                if (splitIntoParts.Length == 1)
-                {
-                    columnName = splitIntoParts[0];
-                }
-                else
-                {
-                    columnName = splitIntoParts.Last();
-                    string qualifier = string.Join(".", splitIntoParts.Take(splitIntoParts.Length - 2));
-                    Table qualifiedTable = Table.Schema.Database.GetObjectOrNull(qualifier) as Table;
-                    if (qualifiedTable != Table)
-                    {
-                        throw new ArgumentException("The qualifier provided on argument \"" + name + "\" does not match table " + Table + ".");
-                    }
-                }
-                Column ret;
-                if (_nameIndexed.TryGetValue(columnName, out ret))
-                {
-                    return ret;
-                }
-                else
-                {
+                Column ret = GetColumnOrNull(name);
+                if (ret == null)
+                { 
                     throw new ArgumentException("No column " + name + " exists on table " + Table + ".");
                 }
+                return ret;
             }
         }
 

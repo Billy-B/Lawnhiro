@@ -8,7 +8,7 @@ using System.Web;
 
 namespace Lawnhiro.API
 {
-    [Table]
+    [Table("Providers")]
     public class Provider
     {
         [Column]

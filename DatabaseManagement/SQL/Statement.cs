@@ -65,6 +65,40 @@ namespace DatabaseManagement.SQL
             };
         }
 
+        public static InsertStatement InsertInto(ITable table, IEnumerable<IColumn> columnsToInsert, IEnumerable<ScalarExpression> values, IEnumerable<IColumn> outputColumns)
+        {
+            Utility.AssertNonNull(table, "table");
+            Utility.AssertNonNull(columnsToInsert, "columnsToInsert");
+            Utility.AssertNonNull(values, "values");
+            Utility.AssertNonNull(outputColumns, "outputColumns");
+            List<IColumn> columnsList = columnsToInsert.ToList();
+            List<ScalarExpression> valuesList = values.ToList();
+            List<IColumn> outputColumnsList = outputColumns.ToList();
+            if (columnsList.Count == 0)
+            {
+                throw new ArgumentException("Cannot be empty.", "columnsToInsert");
+            }
+            if (valuesList.Count == 0)
+            {
+                throw new ArgumentException("Cannot be empty.", "values");
+            }
+            if (outputColumnsList.Count == 0)
+            {
+                throw new ArgumentException("Cannot be empty.", "outputColumns");
+            }
+            if (columnsList.Count != valuesList.Count)
+            {
+                throw new ArgumentException("Number of values does not match number of provided columns.");
+            }
+            return new InsertStatement
+            {
+                Table = table,
+                InsertColumns = columnsList,
+                Values = valuesList,
+                OutputColumns = outputColumnsList
+            };
+        }
+
         public static UpdateStatement Update(ITable table, IEnumerable<KeyValuePair<IColumn, ScalarExpression>> columnsAndValues, ConditionalExpression whereExpression)
         {
             Utility.AssertNonNull(table, "table");

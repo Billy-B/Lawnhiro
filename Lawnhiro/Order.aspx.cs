@@ -77,14 +77,20 @@ namespace Lawnhiro
                 Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == place.PlaceId);
                 ExistingResidence = existing;
                 bool isNewResidence = existing == null;
-                ddl_heardAboutUsSource.Visible = isNewResidence;
-                txt_providerCode.Visible = isNewResidence;
+                div_headAboutUsSource.Visible = isNewResidence;
+                div_providerCode.Visible = isNewResidence;
             }
+        }
+
+        private void clearPage()
+        {
+            div_orderDetails.Visible = false;
+            txt_address.Text = "";
         }
 
         protected void btn_placeOrder_Click(object sender, EventArgs e)
         {
-            /*Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
+            Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
             newOrder.Price = Price;
             string email = txt_email.Text.ToLower();
             Customer[] allCustomers = Repository.Query<Customer>().ToArray();
@@ -115,8 +121,11 @@ namespace Lawnhiro
             newOrder.CustomerNotes = txt_notes.Text;
             newOrder.Price = Price;
             newOrder.Placed = DateTime.Now;
+            newOrder.PayPalOrderId = "TESTTESTTEST";
+            
             Repository.Add(newOrder);
-            Repository.CommitChanges();*/
+            Repository.CommitChanges();
+            clearPage();
         }
 
         protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
@@ -152,8 +161,10 @@ namespace Lawnhiro
             newOrder.CustomerNotes = txt_notes.Text;
             newOrder.Price = Price;
             newOrder.Placed = DateTime.Now;
+            newOrder.PayPalOrderId = paypalOrderId.Value;
             Repository.Add(newOrder);
             Repository.CommitChanges();
+            clearPage();
         }
     }
 }

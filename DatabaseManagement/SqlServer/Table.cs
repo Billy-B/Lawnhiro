@@ -69,7 +69,7 @@ namespace DatabaseManagement.SqlServer
 
         IColumn ITable.GetColumnByName(string name)
         {
-            return Columns[name];
+            return Columns.GetColumnOrNull(name);
         }
     }
 }

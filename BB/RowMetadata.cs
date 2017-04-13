@@ -23,6 +23,16 @@ namespace BB
             SelectedColumns = new List<IColumn>();
         }
 
+        internal RowMetadata(IEnumerable<IColumn> columns) : this()
+        {
+            int index = 0;
+            foreach (IColumn column in columns)
+            {
+                ColumnMapper.Add(column, index++);
+                SelectedColumns.Add(column);
+            }
+        }
+
         public void AddSelectColumn(IColumn column, int position)
         {
             ColumnMapper.Add(column, position);

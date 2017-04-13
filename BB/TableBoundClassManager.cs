@@ -30,17 +30,27 @@ namespace BB
 
         public IList<JoinedPropertyManager> JoinedProperties { get; private set; }
 
+        public IList<IColumn> InsertOutputColumns { get; private set; }
+
         private DeleteStatement _deleteStatement;
         private ConditionalExpression _identifierExpression;
         private IColumn[] _primaryKeyColumns;
         private RowMetadata _metadata;
         private DatabaseRepository _repository;
-        private ColumnPropertyManager[] _insertOutputProperties;
+        //private ColumnPropertyManager[] _insertOutputProperties;
         private TableAttribute _tableAttribute;
+        private IColumn _outputColumns;
 
         internal override IObjectRepository Repository
         {
             get { return _repository; }
+        }
+
+        public object GetColumnValue(IColumn col, object obj)
+        {
+            //ColumnPropertyManager manager = 
+            ObjectExtender extender = ObjectExtender.GetExtender(obj);
+            return ((DatabaseDataRow)extender.DataSource)[col];
         }
 
         protected override IObjectDataSource FetchByPrimaryKey(object primaryKey)
@@ -63,6 +73,10 @@ namespace BB
                 throw new ArgumentException("Cannot find table \"" + tableName + "\".");
             }
             HasInsertOutput = Table.HasIdentityColumn;
+            if (HasInsertOutput)
+            {
+                InsertOutputColumns = new IColumn[] { Table.IdentityColumn };
+            }
             _repository = DatabaseRepository.GetRepository(Table.Database);
             foreach (TableBoundTypePropertyManager propMgr in ManagedProperties.OfType<TableBoundTypePropertyManager>())
             {
@@ -105,7 +119,6 @@ namespace BB
             SelectStatement selectByPkStatement = Statement.SelectFrom(Expression.Table(Table), orderedByOrdinal.Select(c => Expression.Column(c)), 1, identifierExpr);
             RowMetadata metadata = new RowMetadata();
             int position = 0;
-            _insertOutputProperties = ValidManagedProperties.OfType<ColumnPropertyManager>().Where(p => p.Column.IsIdentity).ToArray();
             foreach (IColumn column in orderedByOrdinal)
             {
                 metadata.AddSelectColumn(column, position++);
@@ -134,14 +147,14 @@ namespace BB
             return Expression.Parameter("@" + column.Name, column.DbType);
         }*/
 
-        public void AssignInsertOutputValues(object[] values)
+        /*public void AssignInsertOutputValues(object[] values)
         {
             int index = 0;
             foreach (ColumnPropertyManager propManager in _insertOutputProperties)
             {
                 //propManager.SetValue()
             }
-        }
+        }*/
 
         public void CreateInsertCommand(IDbCommand command, object obj)
         {
@@ -160,7 +173,15 @@ namespace BB
                 parameterNames[i] = parameterName;
                 DatabaseRepository.AddParameter(command, parameterName, values[i]);
             }
-            InsertStatement insertStatement = Statement.InsertInto(Table, insertColumns, parameterNames.Select(s => Expression.Parameter(s, DbType.Object)));
+            InsertStatement insertStatement;
+            if (HasInsertOutput)
+            {
+                insertStatement = Statement.InsertInto(Table, insertColumns, parameterNames.Select(s => Expression.Parameter(s, DbType.Object)), InsertOutputColumns);
+            }
+            else
+            {
+                insertStatement = Statement.InsertInto(Table, insertColumns, parameterNames.Select(s => Expression.Parameter(s, DbType.Object)));
+            }
             command.CommandText = insertStatement.ToString();
 
             //action_addInsertParameters(obj, command);
@@ -214,8 +235,6 @@ namespace BB
                 DatabaseRepository.AddParameter(command, "pk_" + i, asArray[i]);
             }
         }
-
-        
 
         /*internal void PrepareInsert()
         {

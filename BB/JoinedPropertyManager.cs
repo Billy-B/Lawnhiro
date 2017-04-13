@@ -76,7 +76,13 @@ namespace BB
 
         public override void AppendInsert(IList<KeyValuePair<IColumn, object>> insertValues, object propValue)
         {
-            throw new NotImplementedException();
+            if (propValue != null)
+            {
+                for (int i = 0; i < ReferencedColumns.Count; i++)
+                {
+                    insertValues.Add(new KeyValuePair<IColumn, object>(ForeignKeyColumns[i], ReferencedManager.GetColumnValue(ReferencedColumns[i], propValue)));
+                }
+            }
         }
     }
 }

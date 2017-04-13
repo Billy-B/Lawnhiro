@@ -65,12 +65,16 @@ namespace BB
                                 TableBoundClassManager manager = (TableBoundClassManager)TypeManager.GetManager(grouping.Key);
                                 if (manager.HasInsertOutput)
                                 {
+                                    RowMetadata outputMetadata = new RowMetadata(manager.InsertOutputColumns);
+                                    
                                     foreach (object obj in grouping)
                                     {
                                         manager.CreateInsertCommand(command, obj);
+                                        ObjectExtender extender = ObjectExtender.GetExtender(obj);
                                         using (IDataReader reader = command.ExecuteReader())
                                         {
-
+                                            reader.Read();
+                                            extender.DataSource = new DatabaseDataRow(outputMetadata, reader);
                                         }
                                         command.Parameters.Clear();
                                     }

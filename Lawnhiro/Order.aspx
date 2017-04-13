@@ -6,7 +6,7 @@
 <head runat="server">
     <title></title>
 </head>
-<body>
+<body style="background-image: url(../Images/background.jpg)">
     <form id="form1" runat="server">
         <div>
             <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY&v=3.exp&sensor=false&libraries=places"></script>
@@ -43,10 +43,11 @@
             
                 {
 
-                    env: 'sandbox', // Specify 'sandbox' for the test environment, 'production'
+                    env: 'production', // Specify 'sandbox' for the test environment, 'production'
 
                     client: {
-                        sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-'
+                        sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-',
+                        production: 'AZyOmu5y4n9XGmYgARgR3KB4Slw-hDqh0uqfEKsfsASZTVAbpnTvmLKx6LTdDE6-BVq2dC85w4Xxm1k_'
                     },
 
                     payment: function (price) {
@@ -54,8 +55,8 @@
                         if (Page_ClientValidate()) {
                             var env = this.props.env;
                             var client = this.props.client;
-                            orderAmount = document.getElementById('priceField').Value;
-
+                            orderAmount = document.getElementById('priceField').value;
+                            //alert(orderAmount);
                             return paypal.rest.payment.create(env, client, {
                                 transactions: [
                                     {
@@ -76,18 +77,18 @@
                         return actions.payment.execute().then(function () {
                             // Show a success page to the buyer
                             ///v1/payments/orders/order_id
-                            document.getElementById('paypalOrderId').Value = data.paymentID;
+                            document.getElementById('paypalOrderId').value = data.paymentID;
                             __doPostBack('paypalOrderId', 'ValueChanged');
-                            //sendOrderToLawnhiro(data.paymentID);
+                            alert('Your order has been submitted! Stay tuned for email updates.');
                         });
                     }
 
                 }, '#paypal_button');
             </script>
-            <div style="background-color: white;">
-                <img src="~/images/lawnhiro_logo.png" alt="Lawnhiro" style="margin: auto auto;" />
+            <div style="background-color: white; background-image:url(../images/background.png)">
+                <img src="../Images/lawnhiro_logo.png" alt="Lawnhiro" style="margin: auto auto;" />
             </div>
-            <div>
+            <div style="color:white">
                 Ordering a Lawnhiro is easy as
                 <br />
                 A. Enter an address below to reveal your custom price
@@ -111,21 +112,21 @@
                 </div>
                 <asp:Label ID="label_invalidAddress" runat="server" Text="The address you have chosen is not a valid residence." ForeColor="Red" Visible="false" />
                 <div id="div_orderDetails" runat="server" visible="false">
-                    <asp:Label ID="label_price" runat="server" Font-Size="Medium" />
+                    <asp:Label ID="label_price" runat="server" Font-Size="X-Large" />
                     <br />
                     <table>
                         <tr>
                             <td><b>Email Address:</b></td>
                             <td>
                                 <asp:TextBox ID="txt_email" runat="server" TextMode="Email" MaxLength="254" />
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" ForeColor="Red" Text="Required" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" ForeColor="Orange" Text="Required" />
                             </td>
                         </tr>
                         <tr id="div_providerCode" runat="server">
                             <td><b>Provider Code: (optional)</b></td>
                             <td><asp:TextBox ID="txt_providerCode" runat="server" MaxLength="10" /></td>
                         </tr>
-                        <tr>
+                        <tr id="div_headAboutUsSource" runat="server">
                             <td><b>How did you hear about us?</b></td>
                             <td><asp:DropDownList ID="ddl_heardAboutUsSource" runat="server" /></td>
                         </tr>
@@ -138,11 +139,11 @@
                     <b>
                         Agree to <a target="_new" href="http://www.lawnhiro.com/#!terms-and-conditions/x6s6o">Terms &amp; Conditions</a>
                     </b>
-                    <asp:CustomValidator runat="server" EnableClientScript="true" Text="Required" ForeColor="Red" ClientValidationFunction="CheckBoxRequired_ClientValidate" />
+                    <asp:CustomValidator runat="server" EnableClientScript="true" Text="Required" ForeColor="Orange" ClientValidationFunction="CheckBoxRequired_ClientValidate" />
                     <br />
                     <div id="paypal_button">
                     </div>
-                    <asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClientClick="payment(22.22)" BackColor="CadetBlue" />
+                    <%--<asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />--%>
                     <br />
                     *Price is calculated by using Zillow® home data to determine how big your lawn is.
                 </div>

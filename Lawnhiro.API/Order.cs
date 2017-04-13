@@ -30,5 +30,9 @@ namespace Lawnhiro.API
         public string ProviderNotes { get; set; }
         [Column]
         public bool Complete { get; set; }
+        [Column]
+        public string PayPalOrderId { get; set; }
+        [Column]
+        public bool Completed { get; set; }
     }
 }

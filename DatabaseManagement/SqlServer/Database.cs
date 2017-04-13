@@ -61,10 +61,10 @@ namespace DatabaseManagement.SqlServer
         public SchemaObject GetObjectByName(string name)
         {
             SchemaObject ret = GetObjectOrNull(name);
-            if (ret == null)
+            /*if (ret == null)
             {
-                throw new ArgumentException("No object \"" + name + " exists in database " + this + ".", "name");
-            }
+                throw new ArgumentException("No object \"" + name + "\" exists in database " + this + ".", "name");
+            }*/
             return ret;
         }
 
