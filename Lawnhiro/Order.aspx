@@ -25,12 +25,9 @@
                         var state = place.address_components[5].short_name;
                         var zip = place.address_components[7].long_name;
                         var obj = new Object();
-                        obj.Address = address;
-                        obj.City = city;
-                        obj.State = state;
-                        obj.Zip = zip;
-                        obj.PlaceId = place.place_id;
-                        //alert(JSON.stringify(place.place_id));
+                        obj.address_components = place.address_components;
+                        obj.place_id = place.place_id;
+                        //alert(JSON.stringify(place.address_components));
                         document.getElementById('addressData').value = JSON.stringify(obj);
                         __doPostBack('txt_address', 'TextChanged');
                     });

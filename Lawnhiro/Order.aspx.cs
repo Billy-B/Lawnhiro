@@ -47,6 +47,18 @@ namespace Lawnhiro
             set { Session["Price"] = value; }
         }
 
+        class GooglePlace
+        {
+            public string place_id;
+            public addressComponent[] address_components;
+        }
+
+        class addressComponent
+        {
+            public string long_name, short_name;
+            public string[] types;
+        }
+
         class Place
         {
             public string PlaceId, Address, City, State, Zip;
@@ -56,9 +68,32 @@ namespace Lawnhiro
         {
             string json = addressData.Value;
             var serializer = new JavaScriptSerializer();
-            Place place = serializer.Deserialize<Place>(json);
-            SelectedPlace = place;
-            ZillowResidenceInfo residenceInfo = ZillowResidenceInfo.GetResidenceInfo(place.Address, place.City, place.State, place.Zip);
+            GooglePlace googlePlace = serializer.Deserialize<GooglePlace>(json);
+            addressComponent[] components = googlePlace.address_components;
+            addressComponent streetNumber = components.FirstOrDefault(c => c.types.Contains("street_number"));
+            addressComponent route = components.FirstOrDefault(c => c.types.Contains("route"));
+            addressComponent locality = components.FirstOrDefault(c => c.types.Contains("locality"));
+            addressComponent state = components.FirstOrDefault(c => c.types.Contains("administrative_area_level_1"));
+            addressComponent postalCode = components.FirstOrDefault(c => c.types.Contains("postal_code"));
+            ZillowResidenceInfo residenceInfo;
+            if (streetNumber == null || route == null || locality == null || state == null || postalCode == null)
+            {
+                residenceInfo = null;
+            }
+            else
+            {
+                Place place = new Place
+                {
+                    Address = streetNumber.long_name + " " + route.long_name,
+                    City = locality.long_name,
+                    State = state.short_name,
+                    Zip = postalCode.long_name,
+                    PlaceId = googlePlace.place_id
+                };
+                SelectedPlace = place;
+                string address = streetNumber.long_name + " " + route.long_name;
+                residenceInfo = ZillowResidenceInfo.GetResidenceInfo(place.Address, place.City, place.State, place.Zip);
+            }
             if (residenceInfo == null)
             {
                 label_invalidAddress.Visible = true;
@@ -74,7 +109,7 @@ namespace Lawnhiro
                 label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
                 SelectedResidenceInfo = residenceInfo;
                 Residence[] allResidences = Repository.Query<Residence>().ToArray();
-                Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == place.PlaceId);
+                Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == googlePlace.place_id);
                 ExistingResidence = existing;
                 bool isNewResidence = existing == null;
                 div_headAboutUsSource.Visible = isNewResidence;
