@@ -26,5 +26,7 @@ namespace Lawnhiro.API
         public HeardAboutUsSource Source { get; set; }
         [Column]
         public string ProviderCode { get; set; }
+        [Column]
+        public decimal MowableSqFt { get; set; }
     }
 }

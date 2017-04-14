@@ -16,7 +16,13 @@
 
             <script type="text/javascript">
                 google.maps.event.addDomListener(window, 'load', function () {
-                    var places = new google.maps.places.Autocomplete(document.getElementById('txt_address'));
+                    var input = document.getElementById('txt_address');
+                    google.maps.event.addDomListener(input, 'keydown', function (e) {
+                        if (e.keyCode == 13) {
+                            e.preventDefault();
+                        }
+                    });
+                    var places = new google.maps.places.Autocomplete(input);
                     google.maps.event.addListener(places, 'place_changed', function () {
 
                         var place = places.getPlace();

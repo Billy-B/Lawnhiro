@@ -12,6 +12,9 @@ namespace Lawnhiro
 {
     public partial class Order : System.Web.UI.Page
     {
+        const decimal BASE_PRICE = 25;
+        const decimal PRICE_PER_SQ_FT = 0.0023M;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             ClientScript.GetPostBackEventReference(this, string.Empty);
@@ -45,6 +48,12 @@ namespace Lawnhiro
         {
             get { return (decimal)Session["Price"]; }
             set { Session["Price"] = value; }
+        }
+
+        private decimal MowableSqFt
+        {
+            get { return (decimal)Session["MowableSqFt"]; }
+            set { Session["MowableSqFt"] = value; }
         }
 
         class GooglePlace
@@ -103,9 +112,11 @@ namespace Lawnhiro
             {
                 label_invalidAddress.Visible = false;
                 div_orderDetails.Visible = true;
-                decimal price = ZillowResidenceInfo.CalculatePrice(residenceInfo);
+                decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
+                decimal price = CalculatePrice(mowableSqFt);
                 priceField.Value = price.ToString();
                 Price = price;
+                MowableSqFt = mowableSqFt;
                 label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
                 SelectedResidenceInfo = residenceInfo;
                 Residence[] allResidences = Repository.Query<Residence>().ToArray();
@@ -151,6 +162,7 @@ namespace Lawnhiro
                 residence.ProviderCode = txt_providerCode.Text;
                 Repository.Add(residence);
             }
+            residence.MowableSqFt = MowableSqFt;
             newOrder.Customer = customer;
             newOrder.Residence = residence;
             newOrder.CustomerNotes = txt_notes.Text;
@@ -200,6 +212,40 @@ namespace Lawnhiro
             Repository.Add(newOrder);
             Repository.CommitChanges();
             clearPage();
+        }
+
+        public static decimal CalculateMowableSqFt(ZillowResidenceInfo info)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            decimal estimatedFootprint;
+            decimal lotSqFt;
+            if (info.LotSizeSqFt == null)
+            {
+                lotSqFt = info.FinishedSqFt * 3;
+            }
+            else
+            {
+                lotSqFt = (decimal)info.LotSizeSqFt;
+            }
+            if (info.NumberOfFloors == null) // actual number of floors not available, must estimate.
+            {
+                estimatedFootprint = Math.Min(info.FinishedSqFt, lotSqFt / 2);
+            }
+            else
+            {
+                estimatedFootprint = (info.FinishedSqFt / (decimal)info.NumberOfFloors);
+            }
+            return lotSqFt - estimatedFootprint;
+        }
+
+        public static decimal CalculatePrice(decimal mowableSqFt)
+        {
+            decimal ret = Math.Floor(BASE_PRICE + (PRICE_PER_SQ_FT * mowableSqFt));
+            return ret;
         }
     }
 }
