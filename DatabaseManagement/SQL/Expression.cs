@@ -10,7 +10,8 @@ namespace DatabaseManagement.SQL
     public abstract class Expression
     {
         public abstract ExpressionType Type { get; }
-        //public abstract SqlDbType Type { get; }
+
+        internal abstract string ToCommandString();
 
         internal abstract IEnumerable<Expression> EnumerateSubExpressions();
 
@@ -302,7 +303,7 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static ParameterExpression Parameter(string parameterName, DbType parameterType)
+        /*public static ParameterExpression Parameter(string parameterName, DbType parameterType)
         {
             Utility.AssertNonNull(parameterName, "parameterName");
             if (string.IsNullOrWhiteSpace(parameterName))
@@ -314,6 +315,24 @@ namespace DatabaseManagement.SQL
                 ParameterName = parameterName,
                 ParameterType = parameterType
             };
+        }*/
+
+        public static ConstantExpression Constant(object value)
+        {
+            if (value == null)
+            {
+                value = DBNull.Value;
+            }
+            return new ConstantExpression(value);
+        }
+
+        public static ConstantExpression Constant(object value, DbType dbType)
+        {
+            if (value == null)
+            {
+                value = DBNull.Value;
+            }
+            return new ConstantExpression(value, dbType);
         }
 
         public static ColumnAccessExpression Column(IColumn column)

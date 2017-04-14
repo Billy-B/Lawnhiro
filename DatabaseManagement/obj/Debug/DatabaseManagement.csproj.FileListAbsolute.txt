@@ -18,3 +18,4 @@ C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Debug\Micr
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Debug\Microsoft.SqlServer.ServiceBrokerEnum.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Debug\DatabaseManagement.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Debug\DatabaseManagement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Debug\DatabaseManagement.csprojResolveAssemblyReference.cache

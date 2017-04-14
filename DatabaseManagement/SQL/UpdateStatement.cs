@@ -24,6 +24,16 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
+        public override string ToCommandString()
+        {
+            string ret = "update " + TableToUpdate + " set " + string.Join(", ", ColumnsAndValues.Select(kvp => kvp.Key + "=" + kvp.Value.ToCommandString()));
+            if (WhereExpression != null)
+            {
+                ret += " where " + WhereExpression.ToCommandString();
+            }
+            return ret;
+        }
+
         internal override IEnumerable<Expression> EnumerateExpressions()
         {
             foreach (var kvp in ColumnsAndValues)

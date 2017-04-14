@@ -27,6 +27,17 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
+        public override string ToCommandString()
+        {
+            string ret = "insert into " + Table + " (" + string.Join(",", InsertColumns) + ")";
+            if (OutputColumns != null)
+            {
+                ret += " output " + string.Join(",", OutputColumns.Select(c => "inserted." + c.Name));
+            }
+            ret += " values(" + string.Join(", ", Values.Select(v => v.ToCommandString())) + ")";
+            return ret;
+        }
+
         internal override IEnumerable<Expression> EnumerateExpressions()
         {
             return Values;

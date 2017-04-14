@@ -22,6 +22,11 @@ namespace DatabaseManagement.SQL
             return Table.ToString();
         }
 
+        internal override string ToCommandString()
+        {
+            return ToString();
+        }
+
         internal override IEnumerable<Expression> EnumerateSubExpressions()
         {
             return Enumerable.Empty<Expression>();

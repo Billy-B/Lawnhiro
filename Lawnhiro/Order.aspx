@@ -92,7 +92,7 @@
                     <b>Select your address:   </b>
                     <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" />
                 </div>
-                <asp:Label ID="label_invalidAddress" runat="server" Text="The address you have chosen is not a valid residence." ForeColor="Red" Visible="false" />
+                <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
                 <div id="div_orderDetails" runat="server" visible="false">
                     <asp:Label ID="label_price" runat="server" Font-Size="X-Large" />
                     <br />
@@ -125,7 +125,7 @@
                     <br />
                     <div id="paypal_button">
                     </div>
-                    <%--<asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />--%>
+                    <asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />
                 </div>
             </div>
             <asp:HiddenField ID="addressData" runat="server" ClientIDMode="Static" />

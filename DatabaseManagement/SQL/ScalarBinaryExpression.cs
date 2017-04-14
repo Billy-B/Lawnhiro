@@ -31,6 +31,11 @@ namespace DatabaseManagement.SQL
             return Left + " " + Expression.GetStringExpression(Operation) + " " + Right;
         }
 
+        internal override string ToCommandString()
+        {
+            return Left.ToCommandString() + " " + Expression.GetStringExpression(Operation) + " " + Right.ToCommandString();
+        }
+
         internal override IEnumerable<Expression> EnumerateSubExpressions()
         {
             yield return Left;

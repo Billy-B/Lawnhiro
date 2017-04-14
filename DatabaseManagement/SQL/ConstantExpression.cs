@@ -12,6 +12,7 @@ namespace DatabaseManagement.SQL
         public object Value { get; private set; }
 
         private DbType _type;
+        internal IDbDataParameter Parameter;
 
         internal ConstantExpression(object value)
         {
@@ -38,6 +39,60 @@ namespace DatabaseManagement.SQL
         internal override IEnumerable<Expression> EnumerateSubExpressions()
         {
             return Enumerable.Empty<Expression>();
+        }
+
+        public override string ToString()
+        {
+            object value = Value;
+            if (value == null || value == DBNull.Value)
+            {
+                return "NULL";
+            }
+            else
+            {
+                switch(_type)
+                {
+                    case DbType.AnsiString:
+                    case DbType.AnsiStringFixedLength:
+                    case DbType.String:
+                    case DbType.StringFixedLength:
+                        return "'" + ((string)value).Replace("'", "''") + "'";
+                    case DbType.Binary:
+                        return byteArrayToString((byte[])value);
+                    case DbType.Boolean:
+                        return ((bool)value) ? "1" : "0";
+                    case DbType.Date:
+                        return "'" + ((DateTime)value).ToShortDateString() + "'";
+                    case DbType.DateTime:
+                    case DbType.DateTime2:
+                    case DbType.DateTimeOffset:
+                    case DbType.Guid:
+                    case DbType.Time:
+                        return "'" + value.ToString() + "'";
+                    default:
+                        return value.ToString();
+                }
+            }
+        }
+        private static string byteArrayToString(byte[] bytes)
+        {
+            StringBuilder hex = new StringBuilder(bytes.Length * 2);
+            foreach (byte b in bytes)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
+        }
+
+        internal override string ToCommandString()
+        {
+            IDbDataParameter parameter = Parameter;
+            if (parameter == null)
+            {
+                return ToString();
+            }
+            else
+            {
+                return parameter.ParameterName;
+            }
         }
     }
 }

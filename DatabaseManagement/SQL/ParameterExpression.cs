@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseManagement.SQL
 {
-    public class ParameterExpression : ScalarExpression
+    /*public class ParameterExpression : ScalarExpression
     {
         public string ParameterName { get; internal set; }
 
@@ -32,9 +32,14 @@ namespace DatabaseManagement.SQL
             return ParameterName;
         }
 
+        internal override string ToCommandString()
+        {
+            return ParameterName;
+        }
+
         internal override IEnumerable<Expression> EnumerateSubExpressions()
         {
             return Enumerable.Empty<Expression>();
         }
-    }
+    }*/
 }

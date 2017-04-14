@@ -32,14 +32,12 @@ namespace BB
 
         public IList<IColumn> InsertOutputColumns { get; private set; }
 
-        private DeleteStatement _deleteStatement;
-        private ConditionalExpression _identifierExpression;
         private IColumn[] _primaryKeyColumns;
         private RowMetadata _metadata;
         private DatabaseRepository _repository;
         //private ColumnPropertyManager[] _insertOutputProperties;
         private TableAttribute _tableAttribute;
-        private IColumn _outputColumns;
+        //private ColumnAccessExpression[] _columnsToSelect
 
         internal override IObjectRepository Repository
         {
@@ -55,14 +53,31 @@ namespace BB
 
         protected override IObjectDataSource FetchByPrimaryKey(object primaryKey)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            object[] array = KeyConverter.GetArray(primaryKey);
-            for (int i = 0; i < array.Length; i++)
+            object[] pkArray = KeyConverter.GetArray(primaryKey);
+            RowMetadata metadata = _metadata;
+            SelectStatement selectStatement = metadata.BuildSelectStatement(buildIdentifierExpression(pkArray));
+
+            //SelectStatement selectStatement = Statement.SelectFrom(Expression.Table(Table),)
+            DatabaseDataRow[] rows = _repository.EnumerateRows(selectStatement, metadata).Take(2).ToArray();
+            if (rows.Length == 0)
             {
-                parameters.Add("@pk" + i, array[i]);
+                return null;
             }
-            return _repository.Enumerate(_metadata, parameters, _identifierExpression).FirstOrDefault();
+            else if (rows.Length == 1)
+            {
+                return rows[0];
+            }
+            else
+            {
+                throw new ArgumentException("Multiple rows with this primary key!");
+            }
         }
+
+        /*private SelectStatement buildSelectStatement(ConditionalExpression whereExpression)
+        {
+            RowMetadata metadata = _metadata;
+            return metadata.BuildSelectStatement(whereExpression);
+        }*/
 
         internal override void OnInitialize()
         {
@@ -108,15 +123,9 @@ namespace BB
             {
                 usedColumns.Add(col);
             }
-            ConditionalExpression identifierExpr = columnEqualsParameterExpression(pkColumns[0], "@pk0");
-            for (int i = 1; i < pkColumns.Length; i++)
-            {
-                identifierExpr = Expression.AndAlso(identifierExpr, columnEqualsParameterExpression(pkColumns[i], "@pk" + i));
-            }
-            DeleteStatement deleteStatement = Statement.DeleteFrom(Table, identifierExpr);
             List<IColumn> orderedByOrdinal = usedColumns.OrderBy(c => c.OrdinalPosition).ToList();
             IColumn[] insertColumns = orderedByOrdinal.Where(c => !c.IsIdentity).ToArray();
-            SelectStatement selectByPkStatement = Statement.SelectFrom(Expression.Table(Table), orderedByOrdinal.Select(c => Expression.Column(c)), 1, identifierExpr);
+            //SelectStatement selectByPkStatement = Statement.SelectFrom(Expression.Table(Table), orderedByOrdinal.Select(c => Expression.Column(c)), 1, identifierExpr);
             RowMetadata metadata = new RowMetadata();
             int position = 0;
             foreach (IColumn column in orderedByOrdinal)
@@ -126,8 +135,6 @@ namespace BB
             lock (this)
             {
                 _primaryKeyColumns = pkColumns;
-                _identifierExpression = identifierExpr;
-                _deleteStatement = deleteStatement;
                 UsedColumns = orderedByOrdinal;
                 JoinedProperties = ValidManagedProperties.OfType<JoinedPropertyManager>().ToList();
                 _metadata = metadata;
@@ -135,16 +142,11 @@ namespace BB
             }
         }
 
-        private static ConditionalExpression columnEqualsParameterExpression(IColumn column, string parameterName)
+        /*private static ConditionalExpression columnEqualsParameterExpression(IColumn column, string parameterName)
         {
             ParameterExpression paramExpr = Expression.Parameter(parameterName, column.DbType);
             ColumnAccessExpression columnExpr = Expression.Column(column);
             return Expression.Equal(columnExpr, paramExpr);
-        }
-
-        /*private static ParameterExpression buildParameterExpression(IColumn column)
-        {
-            return Expression.Parameter("@" + column.Name, column.DbType);
         }*/
 
         /*public void AssignInsertOutputValues(object[] values)
@@ -156,7 +158,27 @@ namespace BB
             }
         }*/
 
-        public void CreateInsertCommand(IDbCommand command, object obj)
+        public InsertStatement BuildInsertStatement(object obj)
+        {
+            List<KeyValuePair<IColumn, object>> insertValues = new List<KeyValuePair<IColumn, object>>();
+            foreach (TableBoundTypePropertyManager manager in ValidManagedProperties)
+            {
+                object fieldVal = manager.GetFieldValue(obj);
+                manager.AppendInsert(insertValues, fieldVal);
+            }
+            IColumn[] insertColumns = insertValues.Select(kvp => kvp.Key).ToArray();
+            ConstantExpression[] values = insertValues.Select(kvp => Expression.Constant(kvp.Value)).ToArray();
+            if (HasInsertOutput)
+            {
+                return Statement.InsertInto(Table, insertColumns, values, InsertOutputColumns);
+            }
+            else
+            {
+                return Statement.InsertInto(Table, insertColumns, values);
+            }
+        }
+
+        /*public void CreateInsertCommand(IDbCommand command, object obj)
         {
             List<KeyValuePair<IColumn, object>> insertValues = new List<KeyValuePair<IColumn, object>>();
             foreach (TableBoundTypePropertyManager manager in ValidManagedProperties)
@@ -185,9 +207,38 @@ namespace BB
             command.CommandText = insertStatement.ToString();
 
             //action_addInsertParameters(obj, command);
+        }*/
+
+        private ConditionalExpression buildIdentifierExpression(object obj)
+        {
+            object primaryKey = GetPrimaryKey(obj);
+            object[] pkArray = KeyConverter.GetArray(primaryKey);
+            return buildIdentifierExpression(pkArray);
         }
 
-        public void CreateUpdateCommand(IDbCommand command, ObjectChangeTracker changeTracker)
+        private ConditionalExpression buildIdentifierExpression(object[] primaryKey)
+        {
+            IColumn[] pkColumns = _primaryKeyColumns;
+
+            ConditionalExpression ret = Expression.Equal(Expression.Column(pkColumns[0]), Expression.Constant(primaryKey[0]));
+            for (int i = 1; i < pkColumns.Length; i++)
+            {
+                ret = Expression.AndAlso(ret, Expression.Equal(Expression.Column(pkColumns[i]), Expression.Constant(primaryKey[i])));
+            }
+            return ret;
+        }
+
+        public UpdateStatement BuildUpdateStatement(ObjectChangeTracker changeTracker)
+        {
+            List<KeyValuePair<IColumn, object>> updateValues = new List<KeyValuePair<IColumn, object>>();
+            foreach (var kvp in changeTracker.PropertyValues)
+            {
+                ((TableBoundTypePropertyManager)kvp.Key).AppendUpdate(updateValues, kvp.Value);
+            }
+            return Statement.Update(Table, updateValues.Select(kvp => new KeyValuePair<IColumn, ScalarExpression>(kvp.Key, Expression.Constant(kvp.Value))), buildIdentifierExpression(changeTracker.Object));
+        }
+
+        /*public void CreateUpdateCommand(IDbCommand command, ObjectChangeTracker changeTracker)
         {
             List<KeyValuePair<IColumn, object>> updateValues = new List<KeyValuePair<IColumn, object>>();
             foreach (var kvp in changeTracker.PropertyValues)
@@ -207,13 +258,18 @@ namespace BB
             UpdateStatement updateStatement = Statement.Update(Table, updateExpressions, _identifierExpression);
             addPrimaryKeyParameters(changeTracker.Object, command);
             command.CommandText = updateStatement.ToString();
+        }*/
+
+        public DeleteStatement BuildDeleteStatement(object obj)
+        {
+            return Statement.DeleteFrom(Table, buildIdentifierExpression(obj));
         }
 
-        public void CreateDeleteCommand(IDbCommand command, object obj)
+        /*public void CreateDeleteCommand(IDbCommand command, object obj)
         {
             command.CommandText = _deleteStatement.ToString();
             addPrimaryKeyParameters(obj, command);
-        }
+        }*/
 
         public override object CreatePrimaryKey(IObjectDataSource source)
         {
@@ -226,7 +282,7 @@ namespace BB
             return KeyConverter.GetSystemKey(array);
         }
 
-        private void addPrimaryKeyParameters(object obj, IDbCommand command)
+        /*private void addPrimaryKeyParameters(object obj, IDbCommand command)
         {
             object primaryKey = GetPrimaryKey(obj);
             object[] asArray = KeyConverter.GetArray(obj);
@@ -234,7 +290,7 @@ namespace BB
             {
                 DatabaseRepository.AddParameter(command, "pk_" + i, asArray[i]);
             }
-        }
+        }*/
 
         /*internal void PrepareInsert()
         {

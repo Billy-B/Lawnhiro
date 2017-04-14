@@ -69,8 +69,9 @@ namespace BB
                                     
                                     foreach (object obj in grouping)
                                     {
-                                        manager.CreateInsertCommand(command, obj);
+                                        DatabaseManagement.SQL.InsertStatement insertStatement = manager.BuildInsertStatement(obj);
                                         ObjectExtender extender = ObjectExtender.GetExtender(obj);
+                                        insertStatement.Prepare(command);
                                         using (IDataReader reader = command.ExecuteReader())
                                         {
                                             reader.Read();
@@ -83,7 +84,8 @@ namespace BB
                                 {
                                     foreach (object obj in grouping)
                                     {
-                                        manager.CreateInsertCommand(command, obj);
+                                        DatabaseManagement.SQL.InsertStatement insertStatement = manager.BuildInsertStatement(obj);
+                                        insertStatement.Prepare(command);
                                         command.ExecuteNonQuery();
                                         command.Parameters.Clear();
                                     }
@@ -97,7 +99,8 @@ namespace BB
                                 TableBoundClassManager manager = (TableBoundClassManager)TypeManager.GetManager(grouping.Key);
                                 foreach (ObjectChangeTracker changeTracker in grouping)
                                 {
-                                    manager.CreateUpdateCommand(command, changeTracker);
+                                    DatabaseManagement.SQL.UpdateStatement updateStatement = manager.BuildUpdateStatement(changeTracker);
+                                    updateStatement.Prepare(command);
                                     command.ExecuteNonQuery();
                                     command.Parameters.Clear();
                                 }
@@ -180,18 +183,14 @@ namespace BB
             return enumerateType(manager, metadata);
         }
 
-        public IEnumerable<DatabaseDataRow> Enumerate(RowMetadata metadata, IEnumerable<KeyValuePair<string, object>> parameters, DatabaseManagement.SQL.ConditionalExpression whereExpression)
+        public IEnumerable<DatabaseDataRow> EnumerateRows(DatabaseManagement.SQL.SelectStatement selectStatement, RowMetadata metadata)
         {
             using (IDbConnection connection = Database.GetConnection())
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = metadata.BuildSelectStatement(whereExpression).ToString();
-                    foreach (var kvp in parameters)
-                    {
-                        AddParameter(command, kvp.Key, kvp.Value);
-                    }
+                    selectStatement.Prepare(command);
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -199,7 +198,6 @@ namespace BB
                             yield return new DatabaseDataRow(metadata, reader);
                         }
                     }
-                    //command.Parameters.
                 }
             }
         }
@@ -239,7 +237,7 @@ namespace BB
             }
         }
 
-        public IEnumerable Enumerate(TableBoundClassManager typeManager, DatabaseManagement.SQL.SelectStatement selectStatement, IEnumerable<KeyValuePair<string, object>> parameters, RowMetadata metadata)
+        /*public IEnumerable Enumerate(TableBoundClassManager typeManager, DatabaseManagement.SQL.SelectStatement selectStatement, IEnumerable<KeyValuePair<string, object>> parameters, RowMetadata metadata)
         {
             using (IDbConnection connection = Database.GetConnection())
             {
@@ -261,7 +259,7 @@ namespace BB
                     //command.Parameters.
                 }
             }
-        }
+        }*/
 
         internal static RowMetadata GenerateMetadata(TableBoundClassManager manager)
         {

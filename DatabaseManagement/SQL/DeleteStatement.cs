@@ -20,6 +20,16 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
+        public override string ToCommandString()
+        {
+            string ret = "delete from " + Table;
+            if (WhereExpression != null)
+            {
+                ret += WhereExpression.ToCommandString();
+            }
+            return ret;
+        }
+
         internal override IEnumerable<Expression> EnumerateExpressions()
         {
             if (WhereExpression != null)

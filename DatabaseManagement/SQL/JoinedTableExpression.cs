@@ -25,6 +25,11 @@ namespace DatabaseManagement.SQL
             return Left + " " + Expression.GetStringExpression(JoinType) + " " + Right;
         }
 
+        internal override string ToCommandString()
+        {
+            return Left.ToCommandString() + " " + Expression.GetStringExpression(JoinType) + " " + Right.ToCommandString();
+        }
+
         internal override IEnumerable<Expression> EnumerateSubExpressions()
         {
             yield return Left;

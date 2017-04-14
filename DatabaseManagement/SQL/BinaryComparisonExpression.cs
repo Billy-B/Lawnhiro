@@ -28,5 +28,10 @@ namespace DatabaseManagement.SQL
             yield return Left;
             yield return Right;
         }
+
+        internal override string ToCommandString()
+        {
+            return Left.ToCommandString() + " " + Expression.GetStringExpression(Operation) + " " + Right.ToCommandString();
+        }
     }
 }

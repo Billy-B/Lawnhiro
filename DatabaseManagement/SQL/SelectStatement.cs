@@ -48,6 +48,40 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
+        public override string ToCommandString()
+        {
+            string ret = "select ";
+            if (MaxRows != null)
+            {
+                ret += "top " + MaxRows + " ";
+            }
+            if (SelectedFields == null)
+            {
+                ret += "*";
+            }
+            else
+            {
+                ret += string.Join(",", SelectedFields.Select(e => e.ToCommandString()));
+            }
+            if (FromExpression != null)
+            {
+                ret += " from " + FromExpression.ToCommandString();
+            }
+            if (WhereExpression != null)
+            {
+                ret += " where " + WhereExpression.ToCommandString();
+            }
+            if (GroupByFields != null)
+            {
+                ret += " group by " + String.Join(",", GroupByFields.Select(e => e.ToCommandString()));
+            }
+            if (OrderByFields != null)
+            {
+                ret += " order by " + String.Join(",", OrderByFields.Select(e => e.ToCommandString()));
+            }
+            return ret;
+        }
+
         internal SelectStatement() { }
 
         internal override IEnumerable<Expression> EnumerateExpressions()

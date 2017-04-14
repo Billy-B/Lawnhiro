@@ -11,15 +11,47 @@ namespace DatabaseManagement.SQL
     {
         public void Prepare(IDbCommand command)
         {
-            command.CommandText = this.ToString();
+            Prepare(command, true);
+        }
+
+        public abstract string ToCommandString();
+
+        internal string CommandString
+        {
+            get { return ToCommandString(); }
+        }
+
+        public void Prepare(IDbCommand command, bool parameterizeConstants)
+        {
             command.Parameters.Clear();
-            foreach (ParameterExpression paramExpression in enumerateExpressionsRecursive(EnumerateExpressions()).OfType<ParameterExpression>())
+            Expression[] allExpressions = enumerateExpressionsRecursive(EnumerateExpressions()).ToArray();
+            Dictionary<object, IDbDataParameter> parametersIndexedByValue = new Dictionary<object, IDbDataParameter>();
+            if (parameterizeConstants)
             {
-                IDbDataParameter parameter = command.CreateParameter();
-                parameter.ParameterName = paramExpression.ParameterName;
-                parameter.Value = parameter.Value;
-                command.Parameters.Add(parameter);
+                int paramCounter = 0;
+                foreach (Expression expression in allExpressions)
+                {
+                    ConstantExpression asConstExpression = expression as ConstantExpression;
+                    if (asConstExpression != null)
+                    {
+                        IDbDataParameter parameter;
+                        if (!parametersIndexedByValue.TryGetValue(asConstExpression.Value, out parameter))
+                        {
+                            parameter = command.CreateParameter();
+                            parameter.Value = asConstExpression.Value;
+                            parameter.ParameterName = "@p_" + paramCounter;
+                            paramCounter++;
+                            parametersIndexedByValue.Add(asConstExpression.Value, parameter);
+                        }
+                        asConstExpression.Parameter = parameter;
+                    }
+                }
+                foreach (IDbDataParameter parameter in parametersIndexedByValue.Values)
+                {
+                    command.Parameters.Add(parameter);
+                }
             }
+            command.CommandText = this.ToCommandString();
         }
 
         internal abstract IEnumerable<Expression> EnumerateExpressions();

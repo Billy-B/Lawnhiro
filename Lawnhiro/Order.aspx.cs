@@ -85,13 +85,15 @@ namespace Lawnhiro
             addressComponent state = components.FirstOrDefault(c => c.types.Contains("administrative_area_level_1"));
             addressComponent postalCode = components.FirstOrDefault(c => c.types.Contains("postal_code"));
             ZillowResidenceInfo residenceInfo;
+            Place place;
             if (streetNumber == null || route == null || locality == null || state == null || postalCode == null)
             {
                 residenceInfo = null;
+                place = null;
             }
             else
             {
-                Place place = new Place
+                place = new Place
                 {
                     Address = streetNumber.long_name + " " + route.long_name,
                     City = locality.long_name,
@@ -105,26 +107,38 @@ namespace Lawnhiro
             }
             if (residenceInfo == null)
             {
+                label_invalidAddress.Text = "The address you have chosen is not a valid residence.";
                 label_invalidAddress.Visible = true;
                 div_orderDetails.Visible = false;
             }
             else
             {
-                label_invalidAddress.Visible = false;
-                div_orderDetails.Visible = true;
-                decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
-                decimal price = CalculatePrice(mowableSqFt);
-                priceField.Value = price.ToString();
-                Price = price;
-                MowableSqFt = mowableSqFt;
-                label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
-                SelectedResidenceInfo = residenceInfo;
-                Residence[] allResidences = Repository.Query<Residence>().ToArray();
-                Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == googlePlace.place_id);
-                ExistingResidence = existing;
-                bool isNewResidence = existing == null;
-                div_headAboutUsSource.Visible = isNewResidence;
-                div_providerCode.Visible = isNewResidence;
+                ServiceArea[] areas = Repository.Query<ServiceArea>().ToArray();
+                ServiceArea selectedArea = areas.FirstOrDefault(a => a.City == place.City && a.State == place.State);
+                if (selectedArea == null)
+                {
+                    label_invalidAddress.Text = "It looks like we haven't expanded to your city yet.  Sign up for updates to be the first to know where we go next!";
+                    label_invalidAddress.Visible = true;
+                    div_orderDetails.Visible = false;
+                }
+                else
+                {
+                    label_invalidAddress.Visible = false;
+                    div_orderDetails.Visible = true;
+                    decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
+                    decimal price = CalculatePrice(mowableSqFt);
+                    priceField.Value = price.ToString();
+                    Price = price;
+                    MowableSqFt = mowableSqFt;
+                    label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
+                    SelectedResidenceInfo = residenceInfo;
+                    Residence[] allResidences = Repository.Query<Residence>().ToArray();
+                    Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == googlePlace.place_id);
+                    ExistingResidence = existing;
+                    bool isNewResidence = existing == null;
+                    div_headAboutUsSource.Visible = isNewResidence;
+                    div_providerCode.Visible = isNewResidence;
+                }
             }
         }
 
