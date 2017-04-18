@@ -15,11 +15,11 @@ namespace BB
     {
         protected static readonly Dictionary<Type, TypeManager> _mapper = new Dictionary<Type, TypeManager>();
 
+        private bool _initialized;
+
         public Type Type { get; private set; }
 
         public AssemblyManager AssemblyManager { get; internal set; }
-
-        internal Type ImplimentorType { get; set; }
 
         internal abstract IObjectRepository Repository { get; }
 
@@ -27,8 +27,23 @@ namespace BB
 
         public void EnsureInitialized()
         {
-            RuntimeHelpers.RunClassConstructor(ImplimentorType.TypeHandle);
+            lock (this)
+            {
+                if (!_initialized)
+                {
+                    Initialize();
+                    _initialized = true;
+                }
+            }
         }
+
+        internal PropertyManager GetNonPrimativeValueTypeManager(int index)
+        {
+            EnsureInitialized();
+            return _nonPrimativeValueTypeManagers[index];
+        }
+
+        private PropertyManager[] _nonPrimativeValueTypeManagers;
 
         internal static void Initialize(RuntimeTypeHandle handle)
         {
@@ -42,12 +57,11 @@ namespace BB
             return _mapper.ContainsKey(type);
         }
 
-        public static TypeManager Create(Type type, AssemblyManager assemblyManager, ManagedTypeBaseAttribute att, Type implimentorType)
+        public static TypeManager Create(Type type, AssemblyManager assemblyManager, ManagedTypeBaseAttribute att)
         {
             TypeManager ret = att.CreateTypeManager(type);
             ret.AssemblyManager = assemblyManager;
             ret.Type = type;
-            ret.ImplimentorType = implimentorType;
             _mapper.Add(type, ret);
             return ret;
         }

@@ -14,14 +14,20 @@ namespace BB
 
         public static ObjectExtender GetExtender(object obj)
         {
-            return _extenders.GetValue(obj, o => new ObjectExtender(o));
+            lock (_extenders)
+            {
+                return _extenders.GetValue(obj, o => new ObjectExtender(o));
+            }
         }
 
         internal static ObjectExtender Create(object obj)
         {
-            ObjectExtender ret = new ObjectExtender(obj);
-            _extenders.Add(obj, ret);
-            return ret;
+            lock (_extenders)
+            {
+                ObjectExtender ret = new ObjectExtender(obj);
+                _extenders.Add(obj, ret);
+                return ret;
+            }
         }
 
         internal object Object { get; private set; }

@@ -114,7 +114,7 @@ namespace Lawnhiro
             else
             {
                 ServiceArea[] areas = Repository.Query<ServiceArea>().ToArray();
-                ServiceArea selectedArea = areas.FirstOrDefault(a => a.City == place.City && a.State == place.State);
+                ServiceArea selectedArea = areas.FirstOrDefault(a => a.City == place.City && a.State == place.State && a.StartDate <= DateTime.Today);
                 if (selectedArea == null)
                 {
                     label_invalidAddress.Text = "It looks like we haven't expanded to your city yet.  Sign up for updates to be the first to know where we go next!";
@@ -126,7 +126,7 @@ namespace Lawnhiro
                     label_invalidAddress.Visible = false;
                     div_orderDetails.Visible = true;
                     decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
-                    decimal price = CalculatePrice(mowableSqFt);
+                    decimal price = CalculatePrice(selectedArea, mowableSqFt);
                     priceField.Value = price.ToString();
                     Price = price;
                     MowableSqFt = mowableSqFt;
@@ -135,9 +135,16 @@ namespace Lawnhiro
                     Residence[] allResidences = Repository.Query<Residence>().ToArray();
                     Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == googlePlace.place_id);
                     ExistingResidence = existing;
-                    bool isNewResidence = existing == null;
-                    div_headAboutUsSource.Visible = isNewResidence;
-                    div_providerCode.Visible = isNewResidence;
+                    if (existing == null)
+                    {
+                        div_headAboutUsSource.Visible = true;
+                        div_couponCode.Visible = true;
+                    }
+                    else
+                    {
+                        div_headAboutUsSource.Visible = false;
+                        div_couponCode.Visible = existing.CouponCode != null;
+                    }
                 }
             }
         }
@@ -173,7 +180,7 @@ namespace Lawnhiro
                 residence.Zip = selectedPlace.Zip;
                 HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().ToArray().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
                 residence.Source = selectedSource;
-                residence.ProviderCode = txt_providerCode.Text;
+                residence.CouponCode = txt_couponCode.Text;
                 Repository.Add(residence);
             }
             residence.MowableSqFt = MowableSqFt;
@@ -214,7 +221,10 @@ namespace Lawnhiro
                 residence.Zip = selectedPlace.Zip;
                 HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().ToArray().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
                 residence.Source = selectedSource;
-                residence.ProviderCode = txt_providerCode.Text;
+                if(txt_couponCode.Visible && !string.IsNullOrWhiteSpace(txt_couponCode.Text))
+                {
+                    residence.CouponCode = txt_couponCode.Text;
+                }
                 Repository.Add(residence);
             }
             newOrder.Customer = customer;
@@ -256,9 +266,9 @@ namespace Lawnhiro
             return lotSqFt - estimatedFootprint;
         }
 
-        public static decimal CalculatePrice(decimal mowableSqFt)
+        public static decimal CalculatePrice(ServiceArea area, decimal mowableSqFt)
         {
-            decimal ret = Math.Floor(BASE_PRICE + (PRICE_PER_SQ_FT * mowableSqFt));
+            decimal ret = Math.Floor(area.BasePrice + (mowableSqFt * area.PricePerSqFt));
             return ret;
         }
     }

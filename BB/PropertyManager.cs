@@ -55,7 +55,22 @@ namespace BB
             ilGen.Emit(OpCodes.Ret);
             ret._fieldValueGetter = (Func<object, object>)fieldValueGetterMethod.CreateDelegate(typeof(Func<object, object>));
             DynamicMethod fieldValueSetterMethod = new DynamicMethod("setField_" + backingField, typeof(void), new[] { typeof(object), typeof(object) }, prop.DeclaringType, true);
-            ilGen = fieldValueGetterMethod.GetILGenerator();
+            ilGen = fieldValueSetterMethod.GetILGenerator();
+            ilGen.Emit(OpCodes.Ldarg_0);
+            ilGen.Emit(OpCodes.Castclass, prop.DeclaringType);
+            ilGen.Emit(OpCodes.Ldarg_1);
+            if (prop.PropertyType.IsValueType)
+            {
+                ilGen.Emit(OpCodes.Unbox_Any, prop.PropertyType);
+            }
+            else
+            {
+                ilGen.Emit(OpCodes.Castclass, prop.PropertyType);
+            }
+            ilGen.Emit(OpCodes.Stfld, backingField);
+            ilGen.Emit(OpCodes.Ret);
+            ret._fieldValueSetter = (Action<object, object>)fieldValueSetterMethod.CreateDelegate(typeof(Action<object, object>));
+
             return ret;
         }
 
@@ -69,7 +84,7 @@ namespace BB
             _fieldValueSetter(obj, value);
         }
 
-        public T GetValue<T>(object obj, ref T fld)
+        public object GetValue(object obj)
         {
             if (!IsValid)
             {
@@ -83,23 +98,26 @@ namespace BB
                 {
                     case ObjectState.Attached:
                         object changedValue;
-                        if (ObjectContext.Current.HasChangedPropertyValue(obj, this, fld, out changedValue))
+                        if (ObjectContext.Current.HasChangedPropertyValue(obj, this, out changedValue))
                         {
-                            return (T)changedValue;
+                            return changedValue;
                         }
                         else if (!extender.InitializedProperties.Contains(this))
                         {
-                            fld = (T)FetchValue(extender.DataSource);
+                            extender.InitializedProperties.Add(this);
+                            object ret = FetchValue(extender.DataSource);
+                            SetFieldValue(obj, ret);
+                            return ret;
                         }
                         break;
                     case ObjectState.Deleted:
                         throw new InvalidOperationException("Cannot access property " + Property + " because the object has been deleted.");
                 }
-                return fld;
+                return GetFieldValue(obj);
             }
         }
 
-        public void SetValue<T>(object obj, ref T fld, T value)
+        public void SetValue(object obj, object value)
         {
             if (!IsValid)
             {
@@ -116,7 +134,7 @@ namespace BB
                 {
                     case ObjectState.New:
                     case ObjectState.AwaitingInsert:
-                        fld = value;
+                        SetFieldValue(obj, value);
                         break;
                     case ObjectState.Attached:
                         ObjectContext.Current.SetPropertyValue(obj, this, value);

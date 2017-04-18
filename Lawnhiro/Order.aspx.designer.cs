@@ -67,22 +67,22 @@ namespace Lawnhiro {
         protected global::System.Web.UI.WebControls.TextBox txt_email;
         
         /// <summary>
-        /// div_providerCode control.
+        /// div_couponCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow div_providerCode;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow div_couponCode;
         
         /// <summary>
-        /// txt_providerCode control.
+        /// txt_couponCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_providerCode;
+        protected global::System.Web.UI.WebControls.TextBox txt_couponCode;
         
         /// <summary>
         /// div_headAboutUsSource control.
@@ -119,15 +119,6 @@ namespace Lawnhiro {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chk_agreeToTerms;
-        
-        /// <summary>
-        /// btn_placeOrder control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_placeOrder;
         
         /// <summary>
         /// addressData control.

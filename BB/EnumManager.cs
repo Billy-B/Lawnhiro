@@ -46,7 +46,8 @@ namespace BB
 
         internal override void Initialize()
         {
-            FieldInfo field = ImplimentorType.GetField(AssemblyPreparer.ENUM_MANAGER_INSTANCE_FIELD_NAME);
+            throw new NotImplementedException();
+            //FieldInfo field = ImplimentorType.GetField(AssemblyPreparer.ENUM_MANAGER_INSTANCE_FIELD_NAME);
             //field.SetValue(null, this);
             OnInitialize();
         }

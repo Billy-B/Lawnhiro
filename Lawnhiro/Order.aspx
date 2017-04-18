@@ -90,7 +90,7 @@
             </script>
                 <div>
                     <b>Select your address:   </b>
-                    <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" />
+                    <asp:TextBox ID="txt_address" runat="server" Width="360px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
                 </div>
                 <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
                 <div id="div_orderDetails" runat="server" visible="false">
@@ -101,12 +101,12 @@
                             <td><b>Email Address:</b></td>
                             <td>
                                 <asp:TextBox ID="txt_email" runat="server" TextMode="Email" MaxLength="254" />
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" ForeColor="Orange" Text="Required" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" ForeColor="Red" Text="Required" />
                             </td>
                         </tr>
-                        <tr id="div_providerCode" runat="server">
-                            <td><b>Provider Code: (optional)</b></td>
-                            <td><asp:TextBox ID="txt_providerCode" runat="server" MaxLength="10" /></td>
+                        <tr id="div_couponCode" runat="server">
+                            <td><b>Coupon Code: (optional)</b></td>
+                            <td><asp:TextBox ID="txt_couponCode" runat="server" MaxLength="10" /></td>
                         </tr>
                         <tr id="div_headAboutUsSource" runat="server">
                             <td><b>How did you hear about us?</b></td>
@@ -121,11 +121,11 @@
                     <b>
                         Agree to <a target="_new" href="http://www.lawnhiro.com/#!terms-and-conditions/x6s6o">Terms &amp; Conditions</a>
                     </b>
-                    <asp:CustomValidator runat="server" EnableClientScript="true" Text="Required" ForeColor="Orange" ClientValidationFunction="CheckBoxRequired_ClientValidate" />
+                    <asp:CustomValidator runat="server" EnableClientScript="true" Text="Required" ForeColor="Red" ClientValidationFunction="CheckBoxRequired_ClientValidate" />
                     <br />
                     <div id="paypal_button">
                     </div>
-                    <asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />
+                    <%--<asp:Button ID="btn_placeOrder" runat="server" Text="Place Order" OnClick="btn_placeOrder_Click" BackColor="CadetBlue" />--%>
                 </div>
             </div>
             <asp:HiddenField ID="addressData" runat="server" ClientIDMode="Static" />

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Mono.Reflection;
 
 namespace BB
 {
@@ -16,6 +17,22 @@ namespace BB
         }
 
         private static List<ClassManager> _allClassManagers = new List<ClassManager>();
+
+        private Dictionary<PropertyInfo, PropertyManager> _indexedByProperty;
+
+        internal static PropertyManager GetPropertyManagerInstance(Type propImplType)
+        {
+            PropertyInfo prop = AssemblyPreparer._implTypeMapper[propImplType];
+
+            ClassManager manager = (ClassManager)TypeManager.GetManager(prop.DeclaringType);
+            manager.EnsureInitialized();
+            return manager.GetManager(prop);
+        }
+
+        public PropertyManager GetManager(PropertyInfo prop)
+        {
+            return _indexedByProperty[prop];
+        }
 
         private static void cleanUpReferences()
         {
@@ -157,28 +174,34 @@ namespace BB
             return ObjectExtender.GetExtender(obj).PrimaryKey;
         }
 
+        internal static PropertyInfo[] GetManagedProperties(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(p => p.GetBackingField() != null && p.GetCustomAttribute<ManagedPropertyBaseAttribute>() != null).ToArray();
+        }
+
         internal sealed override void Initialize()
         {
             lock (_allClassManagers)
             {
                 _allClassManagers.Add(this);
             }
-            List<PropertyManager> managedProperties = new List<PropertyManager>();
-            foreach (FieldInfo implField in ImplimentorType.GetFields(BindingFlags.Public | BindingFlags.Static))
+            PropertyInfo[] managedProps = GetManagedProperties(this.Type);
+
+            List<PropertyManager> managerList = new List<PropertyManager>();
+            foreach (PropertyInfo prop in managedProps)
             {
-                PropertyInfo prop = Type.GetProperty(implField.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 PropertyManager propMgr = PropertyManager.Create(prop);
                 propMgr.TypeManager = this;
-                managedProperties.Add(propMgr);
-                implField.SetValue(null, propMgr);
+                managerList.Add(propMgr);
             }
-            ManagedProperties = managedProperties;
+            ManagedProperties = managerList;
+            _indexedByProperty = managerList.ToDictionary(p => p.Property);
             OnInitialize();
-            foreach (PropertyManager manager in managedProperties)
+            foreach (PropertyManager manager in managerList)
             {
                 manager.Initialize();
             }
-            ValidManagedProperties = managedProperties.Where(p => p.IsValid).ToList();
+            ValidManagedProperties = managerList.Where(p => p.IsValid).ToList();
             OnPropertiesInitialized();
             _uninitializedObj = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(Type);
         }

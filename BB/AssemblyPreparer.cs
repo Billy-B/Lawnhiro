@@ -20,7 +20,9 @@ namespace BB
         private static MethodInfo _enumManagerEnsure = typeof(EnumManager).GetMethod("Ensure", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         private static MethodInfo _enumToString = typeof(Enum).GetMethods().Single(m => m.Name == "ToString" && m.GetParameters().Length == 0);
 
-        private class ManagedPropertyBuilder
+        internal static Dictionary<Type, PropertyInfo> _implTypeMapper;
+
+        /*private class ManagedPropertyBuilder
         {
             private PropertyInfo _prop;
             private FieldBuilder _staticImplField;
@@ -40,21 +42,34 @@ namespace BB
                 _backingField = backingField;
             }
 
-            public void Inject(Type bakedType, List<object> dynMethods)
+            public void Inject(Type bakedType)//, List<object> dynMethods)
             {
                 FieldInfo bakedFld = bakedType.GetField(_staticImplField.Name, BindingFlags.Static | BindingFlags.Public);
+                if (_prop.PropertyType.IsValueType && !_prop.PropertyType.IsPrimitive)
+                {
+                    //MethodInfo
+                }
                 if (_getter != null)
                 {
                     DynamicMethod dynamicGetter = new DynamicMethod("get_" + _prop.Name, _prop.PropertyType, new[] { _managedType }, bakedType, true);
                     ILGenerator getterIL = dynamicGetter.GetILGenerator();
                     getterIL.Emit(OpCodes.Ldsfld, bakedFld);
                     getterIL.Emit(OpCodes.Ldarg_0);
-                    getterIL.Emit(OpCodes.Ldarg_0);
-                    getterIL.Emit(OpCodes.Ldflda, _backingField);
-                    getterIL.Emit(OpCodes.Callvirt, typeof(PropertyManager).GetMethod("GetValue").MakeGenericMethod(_prop.PropertyType));
+                    getterIL.Emit(OpCodes.Callvirt, typeof(PropertyManager).GetMethod("GetValue"));
+                    if (_prop.PropertyType.IsValueType)
+                    {
+                        getterIL.Emit(OpCodes.Unbox_Any, _prop.PropertyType);
+                    }
+                    else
+                    {
+                        getterIL.Emit(OpCodes.Castclass, _prop.PropertyType);
+                    }
                     getterIL.Emit(OpCodes.Ret);
+                    //dynMethods.Add(dynamicGetter);
+                    Type delegateType = typeof(Func<,>).MakeGenericType(_managedType, _prop.PropertyType);
+                    object del = dynamicGetter.CreateDelegate(delegateType);
+                    //dynMethods.Add(del);
                     MethodReplacer.ReplaceMethod(dynamicGetter, _getter);
-                    dynMethods.Add(dynamicGetter);
                 }
                 if (_setter != null)
                 {
@@ -62,18 +77,24 @@ namespace BB
                     ILGenerator setterIL = dynamicSetter.GetILGenerator();
                     setterIL.Emit(OpCodes.Ldsfld, bakedFld);
                     setterIL.Emit(OpCodes.Ldarg_0);
-                    setterIL.Emit(OpCodes.Ldarg_0);
-                    setterIL.Emit(OpCodes.Ldflda, _backingField);
                     setterIL.Emit(OpCodes.Ldarg_1);
-                    setterIL.Emit(OpCodes.Callvirt, typeof(PropertyManager).GetMethod("SetValue").MakeGenericMethod(_prop.PropertyType));
+                    if (_prop.PropertyType.IsValueType)
+                    {
+                        setterIL.Emit(OpCodes.Box, _prop.PropertyType);
+                    }
+                    setterIL.Emit(OpCodes.Callvirt, typeof(PropertyManager).GetMethod("SetValue"));
                     setterIL.Emit(OpCodes.Ret);
+                    //dynMethods.Add(dynamicSetter);
+                    Type delegateType = typeof(Action<,>).MakeGenericType(_managedType, _prop.PropertyType);
+                    object del = dynamicSetter.CreateDelegate(delegateType);
+                    dynMethods.Add(del);
                     MethodReplacer.ReplaceMethod(dynamicSetter, _setter);
-                    dynMethods.Add(dynamicSetter);
                 }
             }
-        }
+        }*/
 
-        private static List<object> _dynMethods; //store DynamicMethod objects here so that they are not garbage-collected.
+        //private static List<object> _dynMethods; //store DynamicMethod objects here so that they are not garbage-collected.
+
 
         private static MethodInfo method_InitializeManagedType = ((Action<RuntimeTypeHandle>)TypeManager.Initialize).Method;
 
@@ -110,7 +131,7 @@ namespace BB
 
         public static void PrepareAssemblies(IEnumerable<Assembly> assembliesToPrepare)
         {
-            List<object> dynMethods = new List<object>();
+            Dictionary<Type, PropertyInfo> propImplMapper = new Dictionary<Type, PropertyInfo>();
             AssemblyBuilder dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(DYNAMIC_ASSEMBLY_NAME), AssemblyBuilderAccess.Run);
             ModuleBuilder dynamicModule = dynamicAssembly.DefineDynamicModule("BB.Dynamic");
             foreach (Assembly assembly in assembliesToPrepare)
@@ -122,14 +143,14 @@ namespace BB
                     foreach (Type type in managedTypes)
                     {
                         ManagedTypeBaseAttribute att = type.GetCustomAttribute<ManagedTypeBaseAttribute>();
-                        Type implementorType;
                         if (type.IsClass)
                         {
-                            implementorType = PrepareManagedClass(type, dynamicModule, dynMethods);
+                            PrepareManagedClass(type, dynamicModule, propImplMapper);
+                            TypeManager.Create(type, assemblyManager, att);
                         }
                         else if (type.IsEnum)
                         {
-                            implementorType = PrepareManagedEnum(type, dynamicModule, dynMethods);
+                            throw new NotImplementedException();
                         }
                         else if (type.IsValueType)
                         {
@@ -139,50 +160,44 @@ namespace BB
                         {
                             throw new NotSupportedException();
                         }
-                        TypeManager m = TypeManager.Create(type, assemblyManager, att, implementorType);
-                        if (m is EnumManager)
-                        {
-                            ((EnumManager)m).Initialize();
-                        }
                     }
                 }
             }
-            if (dynMethods.Any())
+            _implTypeMapper = propImplMapper;
+            /*if (dynMethods.Any())
             {
                 _dynMethods = dynMethods;
-            }
+            }*/
         }
 
-        public static Type PrepareManagedClass(Type managedType, ModuleBuilder dynamicModule, List<object> dynMethods)
+        public static void PrepareManagedClass(Type managedType, ModuleBuilder dynamicModule, IDictionary<Type, PropertyInfo> propImplMapper)//, List<object> dynMethods)
         {
             PropertyInfo[] allProperties = managedType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            TypeBuilder dynamicType = dynamicModule.DefineType("Impl_" + managedType.FullName);
-            List<ManagedPropertyBuilder> builders = new List<ManagedPropertyBuilder>();
             foreach (PropertyInfo prop in allProperties)
             {
                 ManagedPropertyBaseAttribute att = prop.GetCustomAttribute<ManagedPropertyBaseAttribute>();
                 if (att != null)
                 {
-                    FieldInfo backingField = prop.GetBackingField();
-                    if (backingField != null)
+                    if (prop.GetBackingField() != null)
                     {
-                        builders.Add(new ManagedPropertyBuilder(prop, dynamicType, backingField));
+                        TypeBuilder propImplType = dynamicModule.DefineType("Impl_" + prop.MetadataToken);
+                        Type bakedType = propImplType.CreateType();
+                        MethodInfo getter = prop.GetGetMethod(true);
+                        MethodInfo setter = prop.GetSetMethod(true);
+                        if (getter != null)
+                        {
+                            MethodInfo newGetter = PropImpl.m_getPropValue.MakeGenericMethod(prop.PropertyType, bakedType);
+                            MethodReplacer.ReplaceMethod(newGetter, getter);
+                        }
+                        if (setter != null)
+                        {
+                            MethodInfo newSetter = PropImpl.m_setPropValue.MakeGenericMethod(prop.PropertyType, bakedType);
+                            MethodReplacer.ReplaceMethod(newSetter, setter);
+                        }
+                        propImplMapper.Add(propImplType, prop);
                     }
                 }
             }
-
-            ConstructorBuilder cctor = dynamicType.DefineTypeInitializer();
-            ILGenerator cctorIL = cctor.GetILGenerator();
-            cctorIL.Emit(OpCodes.Ldtoken, managedType);
-            cctorIL.Emit(OpCodes.Call, method_InitializeManagedType);
-            cctorIL.Emit(OpCodes.Ret);
-            Type ret = dynamicType.CreateType();
-
-            foreach (ManagedPropertyBuilder builder in builders)
-            {
-                builder.Inject(ret, dynMethods);
-            }
-            return ret;
         }
 
         public static Type PrepareManagedEnum(Type enumType, ModuleBuilder dynamicModule, List<object> dynMethods)
@@ -212,6 +227,21 @@ namespace BB
             //MethodReplacer.InjectVirtualMethod(newToStringMethod, _objectToString, enumType);
 
             return ret;
+        }
+
+        internal class PropImpl
+        {
+            public static MethodInfo m_getPropValue = typeof(PropImpl).GetMethod("GetPropValue");
+            public static MethodInfo m_setPropValue = typeof(PropImpl).GetMethod("SetPropValue");
+
+            public TProperty GetPropValue<TProperty, TPropImpl>()
+            {
+                return (TProperty)PropertyManagerImpl<TPropImpl>.Instance.GetValue(this);
+            }
+            public void SetPropValue<TProperty, TPropImpl>(TProperty value)
+            {
+                PropertyManagerImpl<TPropImpl>.Instance.SetValue(this, value);
+            }
         }
     }
 }

@@ -130,17 +130,14 @@ namespace BB
             }
         }
 
-        public bool HasChangedPropertyValue(object obj, PropertyManager prop, object repoValue, out object value)
+        public bool HasChangedPropertyValue(object obj, PropertyManager prop, out object value)
         {
             ObjectChangeTracker changeTracker;
             if (_changeTrackers.TryGetValue(obj, out changeTracker))
             {
                 if (changeTracker.PropertyValues.TryGetValue(prop, out value))
                 {
-                    if (!Equals(value, repoValue))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             

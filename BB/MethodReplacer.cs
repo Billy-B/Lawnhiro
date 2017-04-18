@@ -6,12 +6,15 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace BB
 {
     internal class MethodReplacer
     {
         private static MethodInfo _dynamicMethodHandleAccessor = typeof(DynamicMethod).GetMethod("GetMethodDescriptor", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private static List<object> _objs = new List<object>();
 
         [Flags]
         private enum MethodDescClassification : ushort
@@ -114,6 +117,20 @@ namespace BB
             enum_flag2_HostProtectionLinkCheckOnly = 0x80, // Method has LinkTime check due to HP only.
         }
         [Flags]
+        enum flags3 : ushort
+        {
+            // There are flags available for use here (currently 5 flags bits are available); however, new bits are hard to come by, so any new flags bits should
+            // have a fairly strong justification for existence.
+            enum_flag3_TokenRemainderMask = 0x3FFF, // This must equal METHOD_TOKEN_REMAINDER_MASK calculated higher in this file
+            // These are seperate to allow the flags space available and used to be obvious here
+            // and for the logic that splits the token to be algorithmically generated based on the 
+            // #define
+            enum_flag3_HasForwardedValuetypeParameter = 0x4000, // Indicates that a type-forwarded type is used as a valuetype parameter (this flag is only valid for ngenned items)
+            enum_flag3_ValueTypeParametersWalked = 0x4000, // Indicates that all typeref's in the signature of the method have been resolved to typedefs (or that process failed) (this flag is only valid for non-ngenned methods)
+            enum_flag3_DoesNotHaveEquivalentValuetypeParameters = 0x8000, // Indicates that we have verified that there are no equivalent valuetype parameters for this method
+        }
+
+        [Flags]
         private enum ExtendedFlags : uint
         {
             nomdAttrs = 0x0000FFFF, // method attributes (LCG)
@@ -138,6 +155,20 @@ namespace BB
             nomdLCGMethod = 0x00020000,
             nomdStackArgSize = 0xFFFC0000, // native stack arg size for IL stubs
         }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MethodDesc
+        {
+            public flags3 m_wFlags3AndTokenRemainder;
+            public byte m_chunkIndex;
+            public flags2 m_bFlags2;
+            public ushort m_wSlotNumber;
+            public MethodDescClassification m_wFlags;
+
+            public flags3 excludeRemainder
+            {
+                get { return m_wFlags3AndTokenRemainder & ~flags3.enum_flag3_TokenRemainderMask; }
+            }
+        }
 
         public static unsafe void ReplaceMethod(MethodBase methodToInject, MethodInfo methodToReplace)
         {
@@ -146,6 +177,15 @@ namespace BB
             //Note: this process only prevents future inlining. If calling this process from a method that calls methodToReplace, chances are your test will fail. This is because the parent method was already JIT-ed when methodToReplace was inlinable, and the JIT-ed method cannot be changed.
             
             ushort* handleToReplace = (ushort*)methodToReplace.MethodHandle.Value;
+
+            //(*((MethodDesc*)methodToReplace.MethodHandle.Value)).m_chunkIndex = 6;
+
+            //MethodDesc tarDesc = *((MethodDesc*)handleToReplace);
+            //tarDesc.ToString();
+
+            //MethodDesc injDesc = *((MethodDesc*)methodToInject.MethodHandle.Value);
+            //injDesc.ToString();
+
             handleToReplace[3] |= (ushort)MethodDescClassification.mdcNotInline;
 
             RuntimeMethodHandle handleToInject = GetHandle(methodToInject);
@@ -186,38 +226,43 @@ namespace BB
             {
                 if (IntPtr.Size == 4) // 32-bit
                 {
-                    int* locToInject, locToTarget;
+                    int* locToTarget = (int*)methodToReplace.MethodHandle.Value + 2;
+                    int injVal;
 
-                    locToTarget = (int*)methodToReplace.MethodHandle.Value.ToPointer() + 2;
                     if (methodToInject is DynamicMethod)
                     {
                         RuntimeMethodHandle h = GetHandle(methodToInject);
-                        locToInject = (int*)h.Value + 7;
+                        injVal = *((int*)h.Value + 7);
                     }
                     else
                     {
-                        locToInject = (int*)methodToInject.MethodHandle.Value.ToPointer() + 2;
+                        IntPtr srcAdr = methodToInject.MethodHandle.GetFunctionPointer();
+                        injVal = srcAdr.ToInt32();
                     }
+                    //else
+                    {
 #if DEBUG
-                    if (System.Diagnostics.Debugger.IsAttached)
-                    {
-                        byte* injInst = (byte*)*locToInject;
-                        byte* tarInst = (byte*)*locToTarget;
+                        if (System.Diagnostics.Debugger.IsAttached)
+                        {
+                            byte* injInst = (byte*)injVal;
+                            byte* tarInst = (byte*)*locToTarget;
 
 
-                        int* injSrc = (int*)(injInst + 1);
-                        int* tarSrc = (int*)(tarInst + 1);
+                            int* injSrc = (int*)(injInst + 1);
+                            int* tarSrc = (int*)(tarInst + 1);
 
-                        *tarSrc = (((int)injInst + 5) + *injSrc) - ((int)tarInst + 5);
+                            *tarSrc = (((int)injInst + 5) + *injSrc) - ((int)tarInst + 5);
 
-                    }
-                    else
-                    {
-                        *locToTarget = *locToInject;
-                    }
+                        }
+                        else
+                        {
+                            *locToTarget = injVal;
+                        }
 #else
-                    *locToTarget = *locToInject;
+
+                        *locToTarget = injVal;
 #endif
+                    }
                 }
                 else // 64-bit
                 {
@@ -312,16 +357,14 @@ namespace BB
             }
         }
 
-        /*public static unsafe IntPtr GetMethodAddress(MethodBase method)
-        {
-            return new IntPtr(((int*)method.MethodHandle.Value.ToPointer() + 2));
-        }*/
-
         private static RuntimeMethodHandle GetHandle(MethodBase method)
         {
             if (method is DynamicMethod)
             {
-                return ((RuntimeMethodHandle)_dynamicMethodHandleAccessor.Invoke(method, null));
+                RuntimeMethodHandle ret = (RuntimeMethodHandle)_dynamicMethodHandleAccessor.Invoke(method, null);
+                //object obj = GCHandle.Alloc(ret, GCHandleType.Pinned);
+                //_objs.Add(obj);
+                return ret;
             }
             return method.MethodHandle;
         }

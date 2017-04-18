@@ -58,7 +58,9 @@
     <Compile Include="JoinedPropertyManager.cs" />
     <Compile Include="KeyConverter.cs" />
     <Compile Include="MethodReplacer.cs" />
+    <Compile Include="MethodUtil.cs" />
     <Compile Include="PropertyInitializationException.cs" />
+    <Compile Include="PropertyManagerImpl.cs" />
     <Compile Include="Queryable.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CacheUniqueIndex.cs" />
@@ -67,7 +69,6 @@
     <Compile Include="ColumnPropertyManager.cs" />
     <Compile Include="ConcreteTypeManager.cs" />
     <Compile Include="DatabaseAttribute.cs" />
-    <Compile Include="DatabaseCommit.cs" />
     <Compile Include="DatabaseDataRow.cs" />
     <Compile Include="DatabaseRepository.cs" />
     <Compile Include="DatabaseTableBoundTypeManager.cs" />

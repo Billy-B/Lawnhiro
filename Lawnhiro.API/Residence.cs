@@ -24,9 +24,11 @@ namespace Lawnhiro.API
         public string State { get; set; }
         [ForeignKey]
         public HeardAboutUsSource Source { get; set; }
-        [Column]
-        public string ProviderCode { get; set; }
+        [Column("ProviderCode")]
+        public string CouponCode { get; set; }
         [Column]
         public decimal MowableSqFt { get; set; }
+        [Column]
+        public decimal? PriceOverride { get; set; }
     }
 }
