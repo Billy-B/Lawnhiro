@@ -12,25 +12,10 @@ namespace Lawnhiro
 {
     public partial class Order : System.Web.UI.Page
     {
-        const decimal BASE_PRICE = 25;
-        const decimal PRICE_PER_SQ_FT = 0.0023M;
-        protected void Page_PreRender(object sender, EventArgs e)
-        {
-            if (!Request.IsSecureConnection && !Request.Url.AbsoluteUri.Contains("localhost"))
-            {
-                Response.Redirect(Request.Url.AbsoluteUri.Replace("http://", "https://"));
-            }
-        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             ClientScript.GetPostBackEventReference(this, string.Empty);
-            if (!IsPostBack)
-            {
-                HeardAboutUsSource[] sources = Repository.Query<HeardAboutUsSource>().ToArray();
-                ddl_heardAboutUsSource.DataSource = sources;
-                ddl_heardAboutUsSource.DataBind();
-            }
         }
 
         private ZillowResidenceInfo SelectedResidenceInfo
@@ -75,11 +60,6 @@ namespace Lawnhiro
             public string[] types;
         }
 
-        class Place
-        {
-            public string PlaceId, Address, City, State, Zip;
-        }
-
         protected void onAddressPicked(object sender, EventArgs e)
         {
             string json = addressData.Value;
@@ -116,7 +96,7 @@ namespace Lawnhiro
             {
                 label_invalidAddress.Text = "The address you have chosen is not a valid residence.";
                 label_invalidAddress.Visible = true;
-                div_orderDetails.Visible = false;
+                div_orderConfirmation.Visible = false;
             }
             else
             {
@@ -126,44 +106,30 @@ namespace Lawnhiro
                 {
                     label_invalidAddress.Text = "It looks like we haven't expanded to your city yet.  Sign up for updates to be the first to know where we go next!";
                     label_invalidAddress.Visible = true;
-                    div_orderDetails.Visible = false;
+                    div_orderConfirmation.Visible = false;
                 }
                 else
                 {
                     label_invalidAddress.Visible = false;
-                    div_orderDetails.Visible = true;
+                    div_orderConfirmation.Visible = true;
                     decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
                     decimal price = CalculatePrice(selectedArea, mowableSqFt);
-                    priceField.Value = price.ToString();
-                    Price = price;
-                    MowableSqFt = mowableSqFt;
+                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx?address={ place.Address}&city={place.City}&state={place.State}&zip={place.Zip}&price={price}&placeId={place.PlaceId}&mowableSqFt={mowableSqFt}');";
                     label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
-                    SelectedResidenceInfo = residenceInfo;
-                    Residence[] allResidences = Repository.Query<Residence>().ToArray();
-                    Residence existing = allResidences.SingleOrDefault(r => r.GooglePlaceId == googlePlace.place_id);
-                    ExistingResidence = existing;
-                    if (existing == null)
-                    {
-                        div_headAboutUsSource.Visible = true;
-                        div_couponCode.Visible = true;
-                    }
-                    else
-                    {
-                        div_headAboutUsSource.Visible = false;
-                        div_couponCode.Visible = existing.CouponCode != null;
-                    }
                 }
             }
         }
 
         private void clearPage()
         {
-            div_orderDetails.Visible = false;
+            div_orderConfirmation.Visible = false;
             txt_address.Text = "";
         }
 
         protected void btn_placeOrder_Click(object sender, EventArgs e)
         {
+            /*Place selectedPlace = SelectedPlace;
+            //string redirect = 
             Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
             newOrder.Price = Price;
             string email = txt_email.Text.ToLower();
@@ -199,11 +165,11 @@ namespace Lawnhiro
             newOrder.PayPalOrderId = "TESTTESTTEST";
             
             Repository.Add(newOrder);
-            Repository.CommitChanges();
+            Repository.CommitChanges();*/
             clearPage();
         }
 
-        protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
+        /*protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
         {
             Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
             newOrder.Price = Price;
@@ -243,7 +209,7 @@ namespace Lawnhiro
             Repository.Add(newOrder);
             Repository.CommitChanges();
             clearPage();
-        }
+        }*/
 
         public static decimal CalculateMowableSqFt(ZillowResidenceInfo info)
         {

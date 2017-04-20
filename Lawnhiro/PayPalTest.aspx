@@ -65,6 +65,7 @@
             </script>
             <div id="paypal-button">
             </div>
+        <a href="<?=$paypal_redirect?>" target="_top">Continue Checking out</a>
         </div>
     </form>
 </body>

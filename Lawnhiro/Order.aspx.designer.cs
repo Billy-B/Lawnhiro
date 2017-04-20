@@ -40,13 +40,13 @@ namespace Lawnhiro {
         protected global::System.Web.UI.WebControls.Label label_invalidAddress;
         
         /// <summary>
-        /// div_orderDetails control.
+        /// div_orderConfirmation control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_orderDetails;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_orderConfirmation;
         
         /// <summary>
         /// label_price control.
@@ -58,67 +58,13 @@ namespace Lawnhiro {
         protected global::System.Web.UI.WebControls.Label label_price;
         
         /// <summary>
-        /// txt_email control.
+        /// btn_placeOrder control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_email;
-        
-        /// <summary>
-        /// div_couponCode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow div_couponCode;
-        
-        /// <summary>
-        /// txt_couponCode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_couponCode;
-        
-        /// <summary>
-        /// div_headAboutUsSource control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow div_headAboutUsSource;
-        
-        /// <summary>
-        /// ddl_heardAboutUsSource control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_heardAboutUsSource;
-        
-        /// <summary>
-        /// txt_notes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_notes;
-        
-        /// <summary>
-        /// chk_agreeToTerms control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_agreeToTerms;
+        protected global::System.Web.UI.WebControls.Button btn_placeOrder;
         
         /// <summary>
         /// addressData control.
@@ -128,23 +74,5 @@ namespace Lawnhiro {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField addressData;
-        
-        /// <summary>
-        /// paypalOrderId control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField paypalOrderId;
-        
-        /// <summary>
-        /// priceField control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField priceField;
     }
 }
