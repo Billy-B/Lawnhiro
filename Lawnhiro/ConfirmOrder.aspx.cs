@@ -23,6 +23,12 @@ namespace Lawnhiro
             set { Session["selectedPlace"] = value; }
         }
 
+        private decimal MowableSqFt
+        {
+            get { return (decimal)Session["MowableSqFt"]; }
+            set { Session["MowableSqFt"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             ClientScript.GetPostBackEventReference(this, string.Empty);
@@ -38,6 +44,7 @@ namespace Lawnhiro
                 string state = Request.Params["state"];
                 string zip = Request.Params["zip"];
                 decimal price = decimal.Parse(Request.Params["price"]);
+                MowableSqFt = decimal.Parse(Request.Params["mowableSqFt"]);
 
                 SelectedPlace = new Lawnhiro.Place
                 {
@@ -100,6 +107,7 @@ namespace Lawnhiro
                 }
                 Repository.Add(residence);
             }
+            residence.MowableSqFt = MowableSqFt;
             newOrder.Customer = customer;
             newOrder.Residence = residence;
             newOrder.CustomerNotes = txt_notes.Text;

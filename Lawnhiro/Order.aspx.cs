@@ -18,36 +18,6 @@ namespace Lawnhiro
             ClientScript.GetPostBackEventReference(this, string.Empty);
         }
 
-        private ZillowResidenceInfo SelectedResidenceInfo
-        {
-            get { return (ZillowResidenceInfo)Session["selectedResidenceInfo"]; }
-            set { Session["selectedResidenceInfo"] = value; }
-        }
-
-        private Residence ExistingResidence
-        {
-            get { return (Residence)Session["existingResidence"]; }
-            set { Session["existingResidence"] = value; }
-        }
-
-        private Place SelectedPlace
-        {
-            get { return (Place)Session["selectedPlace"]; }
-            set { Session["selectedPlace"] = value; }
-        }
-
-        private decimal Price
-        {
-            get { return (decimal)Session["Price"]; }
-            set { Session["Price"] = value; }
-        }
-
-        private decimal MowableSqFt
-        {
-            get { return (decimal)Session["MowableSqFt"]; }
-            set { Session["MowableSqFt"] = value; }
-        }
-
         class GooglePlace
         {
             public string place_id;
@@ -88,7 +58,6 @@ namespace Lawnhiro
                     Zip = postalCode.long_name,
                     PlaceId = googlePlace.place_id
                 };
-                SelectedPlace = place;
                 string address = streetNumber.long_name + " " + route.long_name;
                 residenceInfo = ZillowResidenceInfo.GetResidenceInfo(place.Address, place.City, place.State, place.Zip);
             }

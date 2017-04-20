@@ -12,4 +12,3 @@ C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Mi
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\bin\Release\Microsoft.SqlServer.ServiceBrokerEnum.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Release\DatabaseManagement.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Release\DatabaseManagement.pdb
-C:\Users\Ryker\Documents\Repositories\Lawnhiro\DatabaseManagement\obj\Release\DatabaseManagement.csprojResolveAssemblyReference.cache
