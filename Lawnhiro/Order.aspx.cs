@@ -14,6 +14,13 @@ namespace Lawnhiro
     {
         const decimal BASE_PRICE = 25;
         const decimal PRICE_PER_SQ_FT = 0.0023M;
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            if (!Request.IsSecureConnection && !Request.Url.AbsoluteUri.Contains("localhost"))
+            {
+                Response.Redirect(Request.Url.AbsoluteUri.Replace("http://", "https://"));
+            }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
