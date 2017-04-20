@@ -10,7 +10,7 @@
     <form id="form1" runat="server">
         <div>
             <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY&v=3.exp&sensor=false&libraries=places"></script>
-            <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+            <%--<script src="https://www.paypalobjects.com/api/checkout.js"></script>--%>
             <script src="../Scripts/jquery-3.1.1.min.js"></script>
 
             <script type="text/javascript">
