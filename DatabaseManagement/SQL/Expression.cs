@@ -123,6 +123,18 @@ namespace DatabaseManagement.SQL
             };
         }
 
+        public static BinaryComparisonExpression NotEqual(ScalarExpression left, ScalarExpression right)
+        {
+            Utility.AssertNonNull(left, "left");
+            Utility.AssertNonNull(right, "right");
+            return new BinaryComparisonExpression
+            {
+                Left = left,
+                Right = right,
+                Operation = ExpressionType.NotEqual
+            };
+        }
+
         public static BinaryComparisonExpression LessThan(ScalarExpression left, ScalarExpression right)
         {
             Utility.AssertNonNull(left, "left");
@@ -135,7 +147,7 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static BinaryComparisonExpression LessThanOrEqualTo(ScalarExpression left, ScalarExpression right)
+        public static BinaryComparisonExpression LessThanOrEqual(ScalarExpression left, ScalarExpression right)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");
@@ -159,7 +171,7 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static BinaryComparisonExpression GreaterThanOrEqualTo(ScalarExpression left, ScalarExpression right)
+        public static BinaryComparisonExpression GreaterThanOrEqual(ScalarExpression left, ScalarExpression right)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");

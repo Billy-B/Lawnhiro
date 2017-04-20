@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mono.Reflection;
+using System.Collections;
 
 namespace BB
 {
@@ -47,6 +48,20 @@ namespace BB
             }
         }
         private long _pkAccessCounter;
+
+        public IEnumerable EnumerateValues()
+        {
+            return EnumerateData().Select(ds => GetAttachedObject(ds));
+        }
+
+        public IEnumerable EnumerateValues(System.Linq.Expressions.Expression expression)
+        {
+            return EnumerateData(expression).Select(ds => GetAttachedObject(ds));
+        }
+
+        public abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression);
+
+        public abstract IEnumerable<IObjectDataSource> EnumerateData();
 
         public object GetByPrimaryKey(object primaryKey)
         {

@@ -158,6 +158,17 @@ namespace BB
             }
         }*/
 
+        public override IEnumerable<IObjectDataSource> EnumerateData()
+        {
+            throw new NotImplementedException();
+            //return _repository.EnumerateRows(
+        }
+
+        public override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression)
+        {
+            throw new NotImplementedException();
+        }
+
         public InsertStatement BuildInsertStatement(object obj)
         {
             List<KeyValuePair<IColumn, object>> insertValues = new List<KeyValuePair<IColumn, object>>();
@@ -361,6 +372,6 @@ namespace BB
             action_addPrimaryKeyParameters(obj, command);
         }*/
 
-        private static readonly MethodInfo method_createParameter = ((Action<IDbCommand, string, object>)DatabaseRepository.AddParameter).Method;
+        //private static readonly MethodInfo method_createParameter = ((Action<IDbCommand, string, object>)DatabaseRepository.AddParameter).Method;
     }
 }

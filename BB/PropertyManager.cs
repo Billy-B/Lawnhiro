@@ -35,6 +35,13 @@ namespace BB
 
         internal abstract void Initialize();
 
+        public static PropertyManager GetManager(PropertyInfo prop)
+        {
+            PropertyManager ret;
+            _mapper.TryGetValue(prop, out ret);
+            return ret;
+        }
+
         public static PropertyManager Create(PropertyInfo prop)
         {
             ManagedPropertyBaseAttribute att = prop.GetCustomAttribute<ManagedPropertyBaseAttribute>();
