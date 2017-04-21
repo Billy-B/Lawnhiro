@@ -63,6 +63,8 @@
 
                 }, '#paypal-button');
             </script>
+            <asp:Image ImageUrl="../Images/lawnhiro_logo.png" runat="server" />
+            <h2>Checkout</h2>
             <div id="div_orderDetails">
                 <table>
                     <tr>
@@ -89,7 +91,7 @@
                         <td><asp:DropDownList ID="ddl_heardAboutUsSource" runat="server" /></td>
                     </tr>
                     <tr>
-                        <td><b>Additional Notes/Instructions:</b></td>
+                        <td><b>Notes / Instructions:</b></td>
                         <td><asp:TextBox ID="txt_notes" runat="server" TextMode="MultiLine" Width="300" /></td>
                     </tr>
                 </table>

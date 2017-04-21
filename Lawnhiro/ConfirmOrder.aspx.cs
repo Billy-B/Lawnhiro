@@ -29,40 +29,43 @@ namespace Lawnhiro
             set { Session["MowableSqFt"] = value; }
         }
 
+        private decimal Price
+        {
+            get { return (decimal)Session["Price"]; }
+            set { Session["Price"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             ClientScript.GetPostBackEventReference(this, string.Empty);
             if (!IsPostBack)
             {
+                Place selectedPlace = SelectedPlace;
+                if (selectedPlace == null)
+                {
+                    Response.Redirect("~/Order.aspx");
+                    return;
+                }
+
                 HeardAboutUsSource[] sources = Repository.Query<HeardAboutUsSource>().ToArray();
                 ddl_heardAboutUsSource.DataSource = sources;
                 ddl_heardAboutUsSource.DataBind();
 
-                string placeId = Request.Params["placeId"];
+                /*string placeId = Request.Params["placeId"];
                 string address = Request.Params["address"];
                 string city = Request.Params["city"];
                 string state = Request.Params["state"];
                 string zip = Request.Params["zip"];
                 decimal price = decimal.Parse(Request.Params["price"]);
-                MowableSqFt = decimal.Parse(Request.Params["mowableSqFt"]);
+                MowableSqFt = decimal.Parse(Request.Params["mowableSqFt"]);*/
 
-                SelectedPlace = new Lawnhiro.Place
-                {
-                    PlaceId = placeId,
-                    Address = address,
-                    City = city,
-                    State = state,
-                    Zip = zip
-                };
+                priceField.Value = Price.ToString();
 
-                priceField.Value = price.ToString();
-
-                label_address.Text = string.Join(" ", address, city, state, zip);
-                label_price.Text = price.ToString("C");
+                label_address.Text = string.Join(" ", selectedPlace.Address, selectedPlace.City, selectedPlace.State, selectedPlace.Zip);
+                label_price.Text = Price.ToString("C");
 
                 Residence[] residences = Repository.Query<Residence>().ToArray();
-                Residence existingResidence = residences.FirstOrDefault(r => r.GooglePlaceId == placeId);
-                ExistingResidence = existingResidence;
+                Residence existingResidence = ExistingResidence;
                 if (existingResidence == null)
                 {
                     div_headAboutUsSource.Visible = true;
@@ -79,7 +82,7 @@ namespace Lawnhiro
         protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
         {
             Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
-            newOrder.Price = decimal.Parse(priceField.Value);
+            newOrder.Price = Price;
             string email = txt_email.Text.ToLower();
             Customer[] allCustomers = Repository.Query<Customer>().ToArray();
             Customer customer = allCustomers.SingleOrDefault(c => c.Email == email);

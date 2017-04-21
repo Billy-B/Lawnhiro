@@ -44,7 +44,7 @@
             <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
             <div id="div_orderConfirmation" runat="server" visible="false">
                 <asp:Label ID="label_price" runat="server" ForeColor="Red" Font-Size="X-Large" />
-                <asp:Button ID="btn_placeOrder" runat="server" Text="I'll Take it!" OnClick="btn_placeOrder_Click" />
+                <asp:Button ID="btn_placeOrder" runat="server" Text="I'll Take it!" OnClick="btn_placeOrder_Click" BackColor="Green" ForeColor="WhiteSmoke" Font-Size="Large" />
             </div>
         </div>
         <asp:HiddenField ID="addressData" runat="server" ClientIDMode="Static" />

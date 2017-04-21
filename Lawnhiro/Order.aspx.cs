@@ -12,6 +12,29 @@ namespace Lawnhiro
 {
     public partial class Order : System.Web.UI.Page
     {
+        private Residence ExistingResidence
+        {
+            get { return (Residence)Session["existingResidence"]; }
+            set { Session["existingResidence"] = value; }
+        }
+
+        private Place SelectedPlace
+        {
+            get { return (Place)Session["selectedPlace"]; }
+            set { Session["selectedPlace"] = value; }
+        }
+
+        private decimal MowableSqFt
+        {
+            get { return (decimal)Session["MowableSqFt"]; }
+            set { Session["MowableSqFt"] = value; }
+        }
+
+        private decimal Price
+        {
+            get { return (decimal)Session["Price"]; }
+            set { Session["Price"] = value; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -82,8 +105,21 @@ namespace Lawnhiro
                     label_invalidAddress.Visible = false;
                     div_orderConfirmation.Visible = true;
                     decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
-                    decimal price = CalculatePrice(selectedArea, mowableSqFt);
-                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx?address={ place.Address}&city={place.City}&state={place.State}&zip={place.Zip}&price={price}&placeId={place.PlaceId}&mowableSqFt={mowableSqFt}');";
+                    decimal price;
+                    Residence existingResidence = Repository.Query<Residence>().ToArray().FirstOrDefault(r => r.GooglePlaceId == place.PlaceId);
+                    if (existingResidence != null && existingResidence.PriceOverride != null)
+                    {
+                        price = existingResidence.PriceOverride.Value;
+                    }
+                    else
+                    {
+                        price = CalculatePrice(selectedArea, mowableSqFt);
+                    }
+                    MowableSqFt = mowableSqFt;
+                    Price = price;
+                    ExistingResidence = existingResidence;
+                    SelectedPlace = place;
+                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx');";
                     label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
                 }
             }
