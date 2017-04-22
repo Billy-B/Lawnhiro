@@ -38,12 +38,12 @@
                 });
             </script>
             <div>
-                <b>Select your address:   </b>
-                <asp:TextBox ID="txt_address" runat="server" Width="360px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
+                <b>Select your address:</b><br />
+                <asp:TextBox ID="txt_address" runat="server" Width="333px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
             </div>
             <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
             <div id="div_orderConfirmation" runat="server" visible="false">
-                <asp:Label ID="label_price" runat="server" ForeColor="Red" Font-Size="X-Large" />
+                <asp:Label ID="label_price" runat="server" ForeColor="Red" Font-Size="Large" />
                 <asp:Button ID="btn_placeOrder" runat="server" Text="I'll Take it!" OnClick="btn_placeOrder_Click" BackColor="Green" ForeColor="WhiteSmoke" Font-Size="Large" />
             </div>
         </div>
