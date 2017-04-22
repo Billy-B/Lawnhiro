@@ -39,7 +39,7 @@
             </script>
             <div>
                 <b>Select your address:</b><br />
-                <asp:TextBox ID="txt_address" runat="server" Width="333px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
+                <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
             </div>
             <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
             <div id="div_orderConfirmation" runat="server" visible="false">
