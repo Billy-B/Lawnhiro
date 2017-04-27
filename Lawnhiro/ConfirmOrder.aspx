@@ -4,23 +4,19 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Lawnhiro</title>
 </head>
 <body>
     <form id="form1" runat="server">
         <div>
             <script src="https://www.paypalobjects.com/api/checkout.js"></script>
             <script src="../Scripts/jquery-3.1.1.min.js"></script>
-
             <script type="text/javascript">
                 function CheckBoxRequired_ClientValidate(sender, e) {
                     e.IsValid = document.getElementById('chk_agreeToTerms').checked;
                 }
                 paypal.Button.render(
-        
-            
                 {
-
                     env: 'production', // Specify 'sandbox' for the test environment, 'production'
 
                     client: {
@@ -60,7 +56,6 @@
                             alert('Your order has been submitted! Stay tuned for email updates.');
                         });
                     }
-
                 }, '#paypal-button');
             </script>
             <asp:Image ImageUrl="../Images/lawnhiro_logo.png" runat="server" />
@@ -108,6 +103,7 @@
         </div>
         <asp:HiddenField ID="paypalOrderId" runat="server" ClientIDMode="Static" OnValueChanged="paypalOrderId_ValueChanged" />
         <asp:HiddenField ID="priceField" runat="server" ClientIDMode="Static" />
+        <BB:LocalTime ID="localTime" runat="server" />
     </form>
 </body>
 </html>

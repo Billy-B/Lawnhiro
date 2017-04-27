@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace BB
 {
@@ -31,6 +32,11 @@ namespace BB
         internal TableEnumManager(TableAttribute att)
         {
             _tableAttribute = att;
+        }
+
+        public override IEnumerable EnumerateValues()
+        {
+            throw new NotImplementedException();
         }
 
         internal override void OnInitialize()
@@ -108,7 +114,8 @@ namespace BB
 
         public void Refresh()
         {
-            IColumn idColumn = IdColumn;
+            throw new NotImplementedException();
+            /*IColumn idColumn = IdColumn;
             IColumn nameColumn = NameColumn;
             DatabaseDataRow[] rows = _repository.EnumerateRows(_selectStatement).ToArray();
             ulong[] values = new ulong[rows.Length];
@@ -118,7 +125,7 @@ namespace BB
                 values[i] = Convert.ToUInt64(rows[i][idColumn]);
                 names[i] = (string)rows[i][nameColumn];
             }
-            SetValuesAndNames(values, names);
+            SetValuesAndNames(values, names);*/
         }
 
         private static Exception bindingError(Type type, ITable table, string message)

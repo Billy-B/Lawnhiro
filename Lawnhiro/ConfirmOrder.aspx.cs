@@ -40,32 +40,60 @@ namespace Lawnhiro
             ClientScript.GetPostBackEventReference(this, string.Empty);
             if (!IsPostBack)
             {
-                Place selectedPlace = SelectedPlace;
-                if (selectedPlace == null)
+                var queryString = Request.QueryString;
+                Place selectedPlace = new Place
+                {
+                    Address = queryString["address"],
+                    City = queryString["city"],
+                    State = queryString["state"],
+                    Zip = queryString["zip"],
+                    PlaceId = queryString["placeId"]
+                };
+                if (selectedPlace.Address == null
+                    || selectedPlace.City == null
+                    || selectedPlace.PlaceId == null
+                    || selectedPlace.State == null
+                    || selectedPlace.Zip == null)
                 {
                     Response.Redirect("~/Order.aspx");
                     return;
+                }
+                decimal price, mowableSqFt;
+
+                Residence existingResidence = Repository.Query<Residence>().ToArray().FirstOrDefault(r => r.GooglePlaceId == selectedPlace.PlaceId);
+
+                if (existingResidence != null && existingResidence.PriceOverride.HasValue)
+                {
+                    price = existingResidence.PriceOverride.Value;
+                    mowableSqFt = existingResidence.MowableSqFt;
+                }
+                else
+                {
+                    ZillowResidenceInfo residenceInfo = ZillowResidenceInfo.GetResidenceInfo(selectedPlace.Address, selectedPlace.City, selectedPlace.State, selectedPlace.Zip);
+                    if (residenceInfo == null)
+                    {
+                        Response.Redirect("~/Order.aspx");
+                        return;
+                    }
+                    mowableSqFt = PriceCalculator.CalculateMowableSqFt(residenceInfo);
+                    ServiceArea serviceArea = Repository.Query<ServiceArea>().ToArray().FirstOrDefault(r => r.City == selectedPlace.City && r.State == selectedPlace.State);
+                    if (serviceArea == null)
+                    {
+                        Response.Redirect("~/Order.aspx");
+                        return;
+                    }
+                    price = PriceCalculator.CalculatePrice(serviceArea, mowableSqFt);
                 }
 
                 HeardAboutUsSource[] sources = Repository.Query<HeardAboutUsSource>().ToArray();
                 ddl_heardAboutUsSource.DataSource = sources;
                 ddl_heardAboutUsSource.DataBind();
 
-                /*string placeId = Request.Params["placeId"];
-                string address = Request.Params["address"];
-                string city = Request.Params["city"];
-                string state = Request.Params["state"];
-                string zip = Request.Params["zip"];
-                decimal price = decimal.Parse(Request.Params["price"]);
-                MowableSqFt = decimal.Parse(Request.Params["mowableSqFt"]);*/
-
-                priceField.Value = Price.ToString();
+                priceField.Value = price.ToString();
 
                 label_address.Text = string.Join(" ", selectedPlace.Address, selectedPlace.City, selectedPlace.State, selectedPlace.Zip);
-                label_price.Text = Price.ToString("C");
+                label_price.Text = price.ToString("C");
 
-                Residence[] residences = Repository.Query<Residence>().ToArray();
-                Residence existingResidence = ExistingResidence;
                 if (existingResidence == null)
                 {
                     div_headAboutUsSource.Visible = true;
@@ -76,6 +104,9 @@ namespace Lawnhiro
                     div_headAboutUsSource.Visible = false;
                     div_couponCode.Visible = existingResidence.CouponCode != null;
                 }
+                ExistingResidence = existingResidence;
+                Price = price;
+                MowableSqFt = mowableSqFt;
             }
         }
 
@@ -114,7 +145,7 @@ namespace Lawnhiro
             newOrder.Customer = customer;
             newOrder.Residence = residence;
             newOrder.CustomerNotes = txt_notes.Text;
-            newOrder.Placed = DateTime.Now;
+            newOrder.Placed = localTime.BrowserLocalTimeOffset;
             newOrder.PayPalOrderId = paypalOrderId.Value;
             Repository.Add(newOrder);
             Repository.CommitChanges();

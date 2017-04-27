@@ -10,22 +10,27 @@ namespace BB
 {
     internal class DatabaseDataRow : IObjectDataSource
     {
-        private RowMetadata _metadata;
+        private QueryNode _node;
 
         private object[] _data;
 
-        public object this[IColumn col]
+        public object this[IColumn column]
         {
             get
             {
-                return _data[_metadata.ColumnMapper[col]];
+                int index;
+                if (!_node.TryGetColumnIndex(column, out index))
+                {
+                    throw new InvalidOperationException("Column " + column + " was not in query metadata?");
+                }
+                return _data[index];
             }
         }
 
         public bool TryGetColumnValue(IColumn col, out object value)
         {
             int index;
-            if (_metadata.ColumnMapper.TryGetValue(col, out index))
+            if (_node.TryGetColumnIndex(col, out index))
             {
                 value = _data[index];
                 return true;
@@ -37,30 +42,31 @@ namespace BB
             }
         }
 
-        public bool IsColumnDefined(IColumn col)
+        public bool IsColumnDefined(IColumn column)
         {
-            return _metadata.ColumnMapper.ContainsKey(col);
+            int index;
+            return _node.TryGetColumnIndex(column, out index);
         }
 
         private DatabaseDataRow() { }
 
-        internal DatabaseDataRow(RowMetadata metadata, IDataReader reader)
+        internal DatabaseDataRow(QueryNode node, IDataReader reader)
         {
-            _metadata = metadata;
+            _node = node;
             _data = new object[reader.FieldCount];
             reader.GetValues(_data);
         }
 
         public DatabaseDataRow GetJoinedRow(JoinedPropertyManager joinedProperty)
         {
-            RowMetadata joinedMetadata;
-            if (_metadata.JoinedRowMapper.TryGetValue(joinedProperty, out joinedMetadata))
+            QueryNode childNode = _node.GetChildNode(joinedProperty);
+            if (childNode == null)
             {
-                return new DatabaseDataRow { _data = this._data, _metadata = joinedMetadata };
+                return null;
             }
             else
             {
-                return null;
+                return new DatabaseDataRow { _data = this._data, _node = childNode };
             }
         }
 

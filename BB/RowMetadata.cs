@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BB
 {
-    internal class RowMetadata
+    /*internal class RowMetadata
     {
         internal Dictionary<IColumn, int> ColumnMapper { get; private set; }
         internal Dictionary<JoinedPropertyManager, RowMetadata> JoinedRowMapper { get; private set; }
@@ -43,5 +43,5 @@ namespace BB
         {
             return Statement.SelectFrom(Expression.Table(Table), SelectedColumns.Select(c => Expression.Column(c)), whereExpression);
         }
-    }
+    }*/
 }

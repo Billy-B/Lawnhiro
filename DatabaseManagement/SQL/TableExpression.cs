@@ -8,7 +8,7 @@ namespace DatabaseManagement.SQL
 {
     public class TableExpression : TableValuedExpression
     {
-        public ITable Table { get; internal set; }
+        public new ITable Table { get; internal set; }
 
         internal TableExpression() { }
 

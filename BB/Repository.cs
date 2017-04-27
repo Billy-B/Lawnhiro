@@ -17,7 +17,7 @@ namespace BB
                 throw new NotSupportedException("Type " + type + " is not a managed type.");
             }
             mgr.EnsureInitialized();
-            return new Queryable<T> { Provider = mgr.Repository };
+            return new Queryable<T> { Provider = new QueryProvider(mgr) };
         }
 
         public static void Add(System.Collections.IEnumerable objects)

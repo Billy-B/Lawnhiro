@@ -27,6 +27,8 @@ namespace BB
             get { return _getCounter; }
         }
 
+        public double UsageRate { get; internal set; }
+
         public bool IsValid { get; internal set; }
         public PropertyInfo Property { get; internal set; }
         public FieldInfo BackingField { get; internal set; }

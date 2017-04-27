@@ -1,7 +1,9 @@
 ﻿using DatabaseManagement;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -34,6 +36,46 @@ namespace BB
                     Initialize();
                     _initialized = true;
                 }
+            }
+        }
+
+        public abstract IEnumerable EnumerateValues();
+
+        public virtual TResult Execute<TResult>(Expression expression)
+        {
+            Type type = typeof(TResult);
+            Type exprType = expression.Type;
+            Type elemType = QueryHelpers.GetElementType(type);
+            switch (expression.NodeType)
+            {
+                case ExpressionType.Constant:
+                    if (exprType.IsGenericType)
+                    {
+                        if (exprType.GetGenericTypeDefinition() == typeof(Queryable<>))
+                        {
+                            return (TResult)QueryHelpers.GenericCast(EnumerateValues(), Type);
+                        }
+                    }
+                    throw new NotSupportedException();
+                case ExpressionType.Call:
+                    MethodCallExpression methodCallExpr = (MethodCallExpression)expression;
+                    Expression[] arguments = methodCallExpr.Arguments.ToArray();
+                    MethodInfo method = methodCallExpr.Method;
+                    if (method.IsGenericMethod)
+                    {
+                        MethodInfo genericDef = method.GetGenericMethodDefinition();
+                        if (genericDef == QueryableMethods.Where)
+                        {
+                            //Expression predicateExpression = methodCallExpr.
+                        }
+                        else
+                        {
+                            throw new NotSupportedException("Unqueryable method");
+                        }
+                    }
+                    throw new NotSupportedException();
+                default:
+                    throw new NotSupportedException();
             }
         }
 

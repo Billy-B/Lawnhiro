@@ -247,10 +247,11 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static JoinedTableExpression InnerJoin(TableValuedExpression left, TableValuedExpression right)
+        public static JoinedTableExpression InnerJoin(TableValuedExpression left, TableValuedExpression right, ConditionalExpression joinCondition)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");
+            Utility.AssertNonNull(joinCondition, "joinCondition");
             return new JoinedTableExpression
             {
                 Left = left,
@@ -259,10 +260,11 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static JoinedTableExpression LeftOuterJoin(TableValuedExpression left, TableValuedExpression right)
+        public static JoinedTableExpression LeftOuterJoin(TableValuedExpression left, TableValuedExpression right, ConditionalExpression joinCondition)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");
+            Utility.AssertNonNull(joinCondition, "joinCondition");
             return new JoinedTableExpression
             {
                 Left = left,
@@ -271,10 +273,11 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static JoinedTableExpression RightOuterJoin(TableValuedExpression left, TableValuedExpression right)
+        public static JoinedTableExpression RightOuterJoin(TableValuedExpression left, TableValuedExpression right, ConditionalExpression joinCondition)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");
+            Utility.AssertNonNull(joinCondition, "joinCondition");
             return new JoinedTableExpression
             {
                 Left = left,
@@ -283,10 +286,11 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static JoinedTableExpression FullOuterJoin(TableValuedExpression left, TableValuedExpression right)
+        public static JoinedTableExpression FullOuterJoin(TableValuedExpression left, TableValuedExpression right, ConditionalExpression joinCondition)
         {
             Utility.AssertNonNull(left, "left");
             Utility.AssertNonNull(right, "right");
+            Utility.AssertNonNull(joinCondition, "joinCondition");
             return new JoinedTableExpression
             {
                 Left = left,
@@ -353,6 +357,21 @@ namespace DatabaseManagement.SQL
             return new ColumnAccessExpression
             {
                 Column = column
+            };
+        }
+
+        public static ColumnAccessExpression Column(IColumn column, TableExpression tableExpression)
+        {
+            Utility.AssertNonNull(column, "column");
+            Utility.AssertNonNull(tableExpression, "tableExpression");
+            if (column.Table != tableExpression.Table)
+            {
+                throw new ArgumentException("Column must belong to the same table represented by the tableExpression parameter.", "column");
+            }
+            return new ColumnAccessExpression
+            {
+                Column = column,
+                Table = tableExpression
             };
         }
 

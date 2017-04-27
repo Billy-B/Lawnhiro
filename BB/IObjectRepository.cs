@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BB
 {
-    internal interface IObjectRepository : IQueryProvider
+    internal interface IObjectRepository// : IQueryProvider
     {
         void Commit(IList<IGrouping<Type, object>> objectsToInsert, IList<IGrouping<Type, object>> objectsToDelete, IList<IGrouping<Type, ObjectChangeTracker>> objectsToUpdate);
     }

@@ -53,10 +53,12 @@
     <Compile Include="AssemblyManager.cs" />
     <Compile Include="ClassManager.cs" />
     <Compile Include="ClusteredIndexedCollection.cs" />
+    <Compile Include="Date.cs" />
     <Compile Include="EnumManager.cs" />
     <Compile Include="IndexedCollection.cs" />
     <Compile Include="JoinedPropertyManager.cs" />
     <Compile Include="KeyConverter.cs" />
+    <Compile Include="ListInternal.cs" />
     <Compile Include="MethodReplacer.cs" />
     <Compile Include="MethodUtil.cs" />
     <Compile Include="PropertyInitializationException.cs" />
@@ -92,6 +94,10 @@
     <Compile Include="PropertyManager.cs" />
     <Compile Include="PropertyValidationMode.cs" />
     <Compile Include="QueryableMethods.cs" />
+    <Compile Include="QueryBuilder.cs" />
+    <Compile Include="QueryMetadata.cs" />
+    <Compile Include="QueryNode.cs" />
+    <Compile Include="QueryProvider.cs" />
     <Compile Include="RowMetadata.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -108,6 +114,7 @@
     <Compile Include="TypeManager.cs" />
     <Compile Include="UniqueConstraint.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

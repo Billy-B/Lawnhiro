@@ -30,5 +30,7 @@ namespace DatabaseManagement.SQL
         {
             return Enumerable.Empty<Expression>();
         }
+
+        internal ColumnAccessExpression() { }
     }
 }

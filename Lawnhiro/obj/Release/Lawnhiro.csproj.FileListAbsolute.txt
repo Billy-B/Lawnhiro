@@ -38,3 +38,5 @@ C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\bin\DatabaseManagement.p
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\obj\Release\Lawnhiro.csprojResolveAssemblyReference.cache
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\obj\Release\Lawnhiro.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\obj\Release\Lawnhiro.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\bin\BB.Web.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\Lawnhiro\bin\BB.Web.pdb

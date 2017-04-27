@@ -46,6 +46,7 @@
     <Compile Include="CustomerUser.cs" />
     <Compile Include="HeardAboutUsSource.cs" />
     <Compile Include="Order.cs" />
+    <Compile Include="PriceCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider.cs" />
     <Compile Include="Residence.cs" />

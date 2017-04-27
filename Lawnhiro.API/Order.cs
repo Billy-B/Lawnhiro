@@ -17,7 +17,7 @@ namespace Lawnhiro.API
         [ForeignKey]
         public Customer Customer { get; set; }
         [Column]
-        public DateTime Placed { get; set; }
+        public DateTimeOffset Placed { get; set; }
         [Column]
         public string CustomerNotes { get; set; }
         [Column]

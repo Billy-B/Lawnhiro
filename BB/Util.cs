@@ -9,19 +9,14 @@ using System.Threading.Tasks;
 
 namespace BB
 {
-    internal static class Util
+    /*internal static class Util
     {
-
-        /*public static object InitializeObject(Type type, object dataSource)
+        internal static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            object ret = FormatterServices.GetUninitializedObject(type);
-            throw new NotImplementedException();
+            TValue ret;
+            dictionary.TryGetValue(key, out ret);
+            return ret;
         }
-
-        public static ObjectExtender GetExtender(this object obj)
-        {
-            throw new NotImplementedException();
-        }*/
 
         private static class ConditionalWeakTableFuncs<TKey, TValue>
             where TKey : class
@@ -50,5 +45,5 @@ namespace BB
         {
             return ConditionalWeakTableFuncs<TKey, TValue>.ValuesGetter(table);
         }
-    }
+    }*/
 }

@@ -2,6 +2,7 @@
 using Lawnhiro.API;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -104,7 +105,7 @@ namespace Lawnhiro
                 {
                     label_invalidAddress.Visible = false;
                     div_orderConfirmation.Visible = true;
-                    decimal mowableSqFt = CalculateMowableSqFt(residenceInfo);
+                    decimal mowableSqFt = PriceCalculator.CalculateMowableSqFt(residenceInfo);
                     decimal price;
                     Residence existingResidence = Repository.Query<Residence>().ToArray().FirstOrDefault(r => r.GooglePlaceId == place.PlaceId);
                     if (existingResidence != null && existingResidence.PriceOverride != null)
@@ -113,13 +114,20 @@ namespace Lawnhiro
                     }
                     else
                     {
-                        price = CalculatePrice(selectedArea, mowableSqFt);
+                        price = PriceCalculator.CalculatePrice(selectedArea, mowableSqFt);
                     }
                     MowableSqFt = mowableSqFt;
                     Price = price;
                     ExistingResidence = existingResidence;
                     SelectedPlace = place;
-                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx');";
+                    NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    queryString["address"] = place.Address;
+                    queryString["city"] = place.City;
+                    queryString["state"] = place.State;
+                    queryString["zip"] = place.Zip;
+                    queryString["placeId"] = place.PlaceId;
+                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx?{queryString}');";
                     label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
                 }
             }
@@ -216,38 +224,6 @@ namespace Lawnhiro
             clearPage();
         }*/
 
-        public static decimal CalculateMowableSqFt(ZillowResidenceInfo info)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException("info");
-            }
-
-            decimal estimatedFootprint;
-            decimal lotSqFt;
-            if (info.LotSizeSqFt == null)
-            {
-                lotSqFt = info.FinishedSqFt * 3;
-            }
-            else
-            {
-                lotSqFt = (decimal)info.LotSizeSqFt;
-            }
-            if (info.NumberOfFloors == null) // actual number of floors not available, must estimate.
-            {
-                estimatedFootprint = Math.Min(info.FinishedSqFt, lotSqFt / 2);
-            }
-            else
-            {
-                estimatedFootprint = (info.FinishedSqFt / (decimal)info.NumberOfFloors);
-            }
-            return lotSqFt - estimatedFootprint;
-        }
-
-        public static decimal CalculatePrice(ServiceArea area, decimal mowableSqFt)
-        {
-            decimal ret = Math.Floor(area.BasePrice + (mowableSqFt * area.PricePerSqFt));
-            return ret;
-        }
+        
     }
 }

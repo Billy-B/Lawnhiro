@@ -1,0 +1,5 @@
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\bin\Debug\BB.Web.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\bin\Debug\BB.Web.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Debug\BB.Web.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Debug\BB.Web.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Debug\BB.Web.pdb

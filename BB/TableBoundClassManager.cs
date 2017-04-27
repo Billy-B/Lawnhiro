@@ -13,7 +13,7 @@ namespace BB
 {
     internal class TableBoundClassManager : ClassManager
     {
-        //public string TableName { get; internal set; }
+        private const string BASE_ALIAS = "base";
 
         internal TableBoundClassManager(TableAttribute attribute)
         {
@@ -33,11 +33,9 @@ namespace BB
         public IList<IColumn> InsertOutputColumns { get; private set; }
 
         private IColumn[] _primaryKeyColumns;
-        private RowMetadata _metadata;
         private DatabaseRepository _repository;
-        //private ColumnPropertyManager[] _insertOutputProperties;
         private TableAttribute _tableAttribute;
-        //private ColumnAccessExpression[] _columnsToSelect
+        private QueryMetadata _defaultMetadata;
 
         internal override IObjectRepository Repository
         {
@@ -46,7 +44,6 @@ namespace BB
 
         public object GetColumnValue(IColumn col, object obj)
         {
-            //ColumnPropertyManager manager = 
             ObjectExtender extender = ObjectExtender.GetExtender(obj);
             return ((DatabaseDataRow)extender.DataSource)[col];
         }
@@ -54,11 +51,8 @@ namespace BB
         protected override IObjectDataSource FetchByPrimaryKey(object primaryKey)
         {
             object[] pkArray = KeyConverter.GetArray(primaryKey);
-            RowMetadata metadata = _metadata;
-            SelectStatement selectStatement = metadata.BuildSelectStatement(buildIdentifierExpression(pkArray));
-
-            //SelectStatement selectStatement = Statement.SelectFrom(Expression.Table(Table),)
-            DatabaseDataRow[] rows = _repository.EnumerateRows(selectStatement, metadata).Take(2).ToArray();
+            QueryMetadata metadata = _defaultMetadata;
+            DatabaseDataRow[] rows = _repository.EnumerateRows(metadata, buildQueryIdentifierExpression(metadata, pkArray)).Take(2).ToArray();
             if (rows.Length == 0)
             {
                 return null;
@@ -126,19 +120,18 @@ namespace BB
             List<IColumn> orderedByOrdinal = usedColumns.OrderBy(c => c.OrdinalPosition).ToList();
             IColumn[] insertColumns = orderedByOrdinal.Where(c => !c.IsIdentity).ToArray();
             //SelectStatement selectByPkStatement = Statement.SelectFrom(Expression.Table(Table), orderedByOrdinal.Select(c => Expression.Column(c)), 1, identifierExpr);
-            RowMetadata metadata = new RowMetadata();
-            int position = 0;
-            foreach (IColumn column in orderedByOrdinal)
-            {
-                metadata.AddSelectColumn(column, position++);
-            }
+            //RowMetadata metadata = buildMetadata();
+
             lock (this)
             {
                 _primaryKeyColumns = pkColumns;
                 UsedColumns = orderedByOrdinal;
                 JoinedProperties = ValidManagedProperties.OfType<JoinedPropertyManager>().ToList();
-                _metadata = metadata;
+                //_metadata = metadata;
                 _repository = (DatabaseRepository)Repository;
+                QueryMetadata defaultMetadata = new QueryMetadata(this);
+                defaultMetadata.Finalize();
+                _defaultMetadata = defaultMetadata;
             }
         }
 
@@ -158,16 +151,68 @@ namespace BB
             }
         }*/
 
-        public override IEnumerable<IObjectDataSource> EnumerateData()
+        internal override IEnumerable<IObjectDataSource> EnumerateData()
         {
-            throw new NotImplementedException();
-            //return _repository.EnumerateRows(
+            QueryMetadata metadata = _defaultMetadata;
+            return _repository.EnumerateRows(metadata);
         }
 
-        public override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression)
+        internal override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression)
         {
             throw new NotImplementedException();
         }
+
+        internal override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression, int maxRecordCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*private RowMetadata buildMetadata()
+        {
+            int columnIndex = 0;
+            JoinedPropertyManager[] joinedProperties = JoinedProperties.Where(p => p.ShouldSelectJoined).ToArray();
+            IColumn[] selectableColumns = UsedColumns.ToArray();
+            RowMetadata ret = new RowMetadata();
+            ret.Alias = BASE_ALIAS;
+            ret.Table = Table;
+            foreach (IColumn col in selectableColumns)
+            {
+                ret.ColumnMapper.Add(col, columnIndex++);
+            }
+
+            foreach (JoinedPropertyManager joinedProp in joinedProperties)
+            {
+                RowMetadata joinedMetadata = new RowMetadata();
+                joinedMetadata.Alias = joinedProp.Property.Name;
+                ret.JoinedRowMapper.Add(joinedProp, joinedMetadata);
+                appendJoinedRecursive(joinedMetadata, joinedProp, ref columnIndex);
+            }
+            return ret;
+        }
+
+        private static void appendJoinedRecursive(RowMetadata metadata, JoinedPropertyManager joinedProp, ref int columnIndex)
+        {
+            string alias = metadata.Alias;
+            metadata.Alias = joinedProp.Property.Name;
+            TableBoundClassManager referencedManager = joinedProp.ReferencedManager;
+            metadata.Table = referencedManager.Table;
+            IList<IColumn> fkColumns = joinedProp.ForeignKeyColumns;
+            IList<IColumn> referencedColumns = joinedProp.ReferencedColumns;
+            JoinedPropertyManager[] nextJoinedProps = referencedManager.JoinedProperties.Where(p => p.ShouldSelectJoined).ToArray();
+
+            IColumn[] selectableColumns = referencedManager.UsedColumns.Union(referencedColumns).Union(nextJoinedProps.SelectMany(p => p.ForeignKeyColumns)).ToArray();
+            foreach (IColumn col in selectableColumns)
+            {
+                metadata.ColumnMapper.Add(col, columnIndex++);
+            }
+            foreach (JoinedPropertyManager next in nextJoinedProps.Where(p => p.ShouldSelectJoined))
+            {
+                RowMetadata joinedMetadata = new RowMetadata();
+                joinedMetadata.Alias = alias + "." + next.Property.Name;
+                metadata.JoinedRowMapper.Add(next, joinedMetadata);
+                appendJoinedRecursive(joinedMetadata, next, ref columnIndex);
+            }
+        }*/
 
         public InsertStatement BuildInsertStatement(object obj)
         {
@@ -220,21 +265,34 @@ namespace BB
             //action_addInsertParameters(obj, command);
         }*/
 
-        private ConditionalExpression buildIdentifierExpression(object obj)
+        /*private ConditionalExpression buildQueryIdentifierExpression(object obj)
         {
             object primaryKey = GetPrimaryKey(obj);
             object[] pkArray = KeyConverter.GetArray(primaryKey);
-            return buildIdentifierExpression(pkArray);
+            return buildIdentifierExpression(_defaultMetadata, pkArray);
+        }*/
+
+        private ConditionalExpression buildNonQueryIdentifierExpression(object obj)
+        {
+            object primaryKey = GetPrimaryKey(obj);
+            object[] pkArray = KeyConverter.GetArray(primaryKey);
+            ConditionalExpression ret = Expression.Equal(Expression.Column(_primaryKeyColumns[0]), Expression.Constant(pkArray[0]));
+            for(int i = 1; i < _primaryKeyColumns.Length; i++)
+            {
+                ret = Expression.AndAlso(ret, Expression.Equal(Expression.Column(_primaryKeyColumns[i]), Expression.Constant(pkArray[i])));
+            }
+            return ret;
+            //return buildIdentifierExpression(_defaultMetadata, pkArray);
         }
 
-        private ConditionalExpression buildIdentifierExpression(object[] primaryKey)
+        private ConditionalExpression buildQueryIdentifierExpression(QueryMetadata metadata, object[] primaryKey)
         {
             IColumn[] pkColumns = _primaryKeyColumns;
 
-            ConditionalExpression ret = Expression.Equal(Expression.Column(pkColumns[0]), Expression.Constant(primaryKey[0]));
+            ConditionalExpression ret = Expression.Equal(metadata.FirstNode.AccessColumn(pkColumns[0]), Expression.Constant(primaryKey[0]));
             for (int i = 1; i < pkColumns.Length; i++)
             {
-                ret = Expression.AndAlso(ret, Expression.Equal(Expression.Column(pkColumns[i]), Expression.Constant(primaryKey[i])));
+                ret = Expression.AndAlso(ret, Expression.Equal(metadata.FirstNode.AccessColumn(pkColumns[i]), Expression.Constant(primaryKey[i])));
             }
             return ret;
         }
@@ -246,7 +304,7 @@ namespace BB
             {
                 ((TableBoundTypePropertyManager)kvp.Key).AppendUpdate(updateValues, kvp.Value);
             }
-            return Statement.Update(Table, updateValues.Select(kvp => new KeyValuePair<IColumn, ScalarExpression>(kvp.Key, Expression.Constant(kvp.Value))), buildIdentifierExpression(changeTracker.Object));
+            return Statement.Update(Table, updateValues.Select(kvp => new KeyValuePair<IColumn, ScalarExpression>(kvp.Key, Expression.Constant(kvp.Value))), buildNonQueryIdentifierExpression(changeTracker.Object));
         }
 
         /*public void CreateUpdateCommand(IDbCommand command, ObjectChangeTracker changeTracker)
@@ -273,7 +331,7 @@ namespace BB
 
         public DeleteStatement BuildDeleteStatement(object obj)
         {
-            return Statement.DeleteFrom(Table, buildIdentifierExpression(obj));
+            return Statement.DeleteFrom(Table, buildNonQueryIdentifierExpression(obj));
         }
 
         /*public void CreateDeleteCommand(IDbCommand command, object obj)

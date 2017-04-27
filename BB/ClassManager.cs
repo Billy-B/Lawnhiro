@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mono.Reflection;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace BB
 {
@@ -14,7 +15,7 @@ namespace BB
     {
         static ClassManager()
         {
-            var timer = new System.Threading.Timer(o => cleanUpReferences(), null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
+            var timer = new Timer(o => cleanUpReferences(), null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
         }
 
         private static List<ClassManager> _allClassManagers = new List<ClassManager>();
@@ -49,19 +50,21 @@ namespace BB
         }
         private long _pkAccessCounter;
 
-        public IEnumerable EnumerateValues()
+        public override IEnumerable EnumerateValues()
         {
             return EnumerateData().Select(ds => GetAttachedObject(ds));
         }
 
-        public IEnumerable EnumerateValues(System.Linq.Expressions.Expression expression)
+        /*public IEnumerable EnumerateValues(System.Linq.Expressions.Expression expression)
         {
             return EnumerateData(expression).Select(ds => GetAttachedObject(ds));
-        }
+        }*/
 
-        public abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression);
+        internal abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression);
 
-        public abstract IEnumerable<IObjectDataSource> EnumerateData();
+        internal abstract IEnumerable<IObjectDataSource> EnumerateData();
+
+        internal abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression, int maxRecordCount);
 
         public object GetByPrimaryKey(object primaryKey)
         {

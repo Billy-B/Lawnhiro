@@ -115,6 +115,8 @@
     <Content Include="Order.aspx" />
     <Content Include="PayPalTest.aspx" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
+    <Content Include="w3c\p3p.xml" />
+    <None Include="w3c\policy.p3p" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +159,10 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BB.Web\BB.Web.csproj">
+      <Project>{98c876bc-4428-47d2-9bd4-ca50b97ec2ab}</Project>
+      <Name>BB.Web</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BB\BB.csproj">
       <Project>{75b58125-f9f3-432a-a799-ccba9bba8950}</Project>
       <Name>BB</Name>
