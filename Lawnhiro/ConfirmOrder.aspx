@@ -17,7 +17,7 @@
                 }
                 paypal.Button.render(
                 {
-                    env: 'production', // Specify 'sandbox' for the test environment, 'production'
+                    env: 'sandbox', // Specify 'sandbox' for the test environment, 'production'
 
                     client: {
                         sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-',

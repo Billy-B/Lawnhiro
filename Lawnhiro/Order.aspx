@@ -24,10 +24,6 @@
                     google.maps.event.addListener(places, 'place_changed', function () {
 
                         var place = places.getPlace();
-                        var address = place.address_components[0].long_name + ' ' + place.address_components[1].long_name;
-                        var city = place.address_components[3].long_name;
-                        var state = place.address_components[5].short_name;
-                        var zip = place.address_components[7].long_name;
                         var obj = new Object();
                         obj.address_components = place.address_components;
                         obj.place_id = place.place_id;
