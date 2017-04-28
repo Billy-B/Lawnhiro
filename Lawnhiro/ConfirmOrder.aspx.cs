@@ -3,6 +3,8 @@ using Lawnhiro.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -150,6 +152,30 @@ namespace Lawnhiro
             Repository.Add(newOrder);
             Repository.CommitChanges();
             ClientScript.RegisterStartupScript(typeof(Page), "closePage", "window.close();", true);
+
+            var fromAddress = new MailAddress("order.lawnhiro@gmail.com", "Lawnhiro Order Status");
+            var toAddress = new MailAddress(customer.Email);
+            const string fromPassword = "lawnhiro1";
+            const string subject = "Your Lawnhiro Order Has Been Submitted!";
+
+            MailMessage message = new MailMessage();
+            message.From = fromAddress;
+            message.To.Add(toAddress);
+            message.Subject = subject;
+            message.IsBodyHtml = true;
+            message.Body = "This is an automatic notification to inform you your Lawnhiro order has been submitted. Stay tuned for more updates!";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+
+            smtp.Send(message);
         }
     }
 }
