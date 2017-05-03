@@ -161,6 +161,9 @@ namespace Lawnhiro
             MailMessage message = new MailMessage();
             message.From = fromAddress;
             message.To.Add(toAddress);
+#if !DEBUG
+            message.CC.Add("info@lawnhiro.com");
+#endif
             message.Subject = subject;
             message.IsBodyHtml = true;
             message.Body = "This is an automatic notification to inform you your Lawnhiro order has been submitted. Stay tuned for more updates!";
