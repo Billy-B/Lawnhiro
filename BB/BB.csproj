@@ -54,6 +54,7 @@
     <Compile Include="ClassManager.cs" />
     <Compile Include="ClusteredIndexedCollection.cs" />
     <Compile Include="Date.cs" />
+    <Compile Include="EnumerableMethods.cs" />
     <Compile Include="EnumManager.cs" />
     <Compile Include="IndexedCollection.cs" />
     <Compile Include="JoinedPropertyManager.cs" />

@@ -91,7 +91,7 @@ namespace Lawnhiro
                 ddl_heardAboutUsSource.DataSource = sources;
                 ddl_heardAboutUsSource.DataBind();
 
-                priceField.Value = price.ToString();
+                priceField.Value = price.ToString("0.##");
 
                 label_address.Text = string.Join(" ", selectedPlace.Address, selectedPlace.City, selectedPlace.State, selectedPlace.Zip);
                 label_price.Text = price.ToString("C");

@@ -3,6 +3,7 @@ using DatabaseManagement.SQL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -157,15 +158,34 @@ namespace BB
             return _repository.EnumerateRows(metadata);
         }
 
-        internal override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression)
+        public override System.Collections.IEnumerable QueryWhere(System.Linq.Expressions.LambdaExpression expression)
         {
-            throw new NotImplementedException();
+            return base.QueryWhere(expression);
+
         }
 
-        internal override IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression, int maxRecordCount)
+        /*public override TResult Execute<TResult>(System.Linq.Expressions.MethodCallExpression expression)
         {
+            MethodInfo method = expression.Method;
+            if (method.IsGenericMethod)
+            {
+                MethodInfo genericDef = method.GetGenericMethodDefinition();
+                Debug.Assert(genericDef.DeclaringType == typeof(Queryable), "Unqueryable method?");
+                if (genericDef == QueryableMethods.Where)
+                {
+                    //Expression predicateExpression = methodCallExpr.
+                }
+                else
+                {
+                    throw new NotSupportedException("Unqueryable method");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
             throw new NotImplementedException();
-        }
+        }*/
 
         /*private RowMetadata buildMetadata()
         {

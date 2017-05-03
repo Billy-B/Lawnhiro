@@ -60,11 +60,7 @@ namespace BB
             return EnumerateData(expression).Select(ds => GetAttachedObject(ds));
         }*/
 
-        internal abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression);
-
         internal abstract IEnumerable<IObjectDataSource> EnumerateData();
-
-        internal abstract IEnumerable<IObjectDataSource> EnumerateData(System.Linq.Expressions.Expression expression, int maxRecordCount);
 
         public object GetByPrimaryKey(object primaryKey)
         {

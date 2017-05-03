@@ -41,14 +41,113 @@ namespace BB
 
         public abstract IEnumerable EnumerateValues();
 
-        public virtual TResult Execute<TResult>(Expression expression)
+        public virtual IEnumerable QueryWhere(LambdaExpression expression)
         {
+            object compiledDelegate = expression.Compile();
+            IEnumerable cast = QueryHelpers.GenericCast(EnumerateValues(), Type);
+            return (IEnumerable)EnumerableMethods.Where.MakeGenericMethod(Type).Invoke(null, new[] { cast, compiledDelegate });
+        }
+
+        public virtual object QueryFirst()
+        {
+            return EnumerateValues().Cast<object>().First();
+        }
+
+        public virtual object QueryFirstOrDefault()
+        {
+            return EnumerateValues().Cast<object>().FirstOrDefault();
+        }
+
+        public virtual object QueryLast()
+        {
+            return EnumerateValues().Cast<object>().Last();
+        }
+
+        public virtual object QueryLastOrDefault()
+        {
+            return EnumerateValues().Cast<object>().LastOrDefault();
+        }
+
+        public virtual object QuerySingle()
+        {
+            return EnumerateValues().Cast<object>().Single();
+        }
+
+        public virtual object QuerySingleOrDefault()
+        {
+            return EnumerateValues().Cast<object>().SingleOrDefault();
+        }
+
+        public virtual object QueryFirst(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().First();
+        }
+
+        public virtual object QueryFirstOrDefault(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().FirstOrDefault();
+        }
+
+        public virtual object QueryLast(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().Last();
+        }
+
+        public virtual object QueryLastOrDefault(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().LastOrDefault();
+        }
+
+        public virtual object QuerySingle(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().Single();
+        }
+
+        public virtual object QuerySingleOrDefault(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().SingleOrDefault();
+        }
+
+        public virtual bool QueryAny()
+        {
+            return EnumerateValues().Cast<object>().Any();
+        }
+
+        public virtual int QueryCount()
+        {
+            return EnumerateValues().Cast<object>().Count();
+        }
+
+        public virtual int QueryCount(LambdaExpression expression)
+        {
+            object compiledDelegate = expression.Compile();
+            IEnumerable cast = QueryHelpers.GenericCast(EnumerateValues(), Type);
+            return (int)EnumerableMethods.CountMatchExpression.MakeGenericMethod(Type).Invoke(null, new[] { cast, compiledDelegate });
+        }
+
+        public virtual bool QueryAny(LambdaExpression expression)
+        {
+            return QueryWhere(expression).Cast<object>().Any();
+        }
+
+        public virtual bool QueryAll(LambdaExpression expression)
+        {
+            object compiledDelegate = expression.Compile();
+            IEnumerable cast = QueryHelpers.GenericCast(EnumerateValues(), Type);
+            return (bool)EnumerableMethods.All.MakeGenericMethod(Type).Invoke(null, new[] { cast, compiledDelegate });
+        }
+
+        //public abstract TResult Execute<TResult>(MethodCallExpression expression);
+        /*{
             Type type = typeof(TResult);
             Type exprType = expression.Type;
             Type elemType = QueryHelpers.GetElementType(type);
             switch (expression.NodeType)
             {
                 case ExpressionType.Constant:
+                    ConstantExpression constExpr = (ConstantExpression)expression;
+                    object value = constExpr.Value;
+                    IQueryable asQueryable = value as IQueryable;
                     if (exprType.IsGenericType)
                     {
                         if (exprType.GetGenericTypeDefinition() == typeof(Queryable<>))
@@ -77,7 +176,7 @@ namespace BB
                 default:
                     throw new NotSupportedException();
             }
-        }
+        }*/
 
         internal PropertyManager GetNonPrimativeValueTypeManager(int index)
         {

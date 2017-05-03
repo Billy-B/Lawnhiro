@@ -14,9 +14,6 @@ namespace BB
     internal static class QueryHelpers
     {
         private static readonly Func<Type, Type> method_GetElementType = (Func<Type, Type>)Delegate.CreateDelegate(typeof(Func<Type, Type>), Type.GetType("System.Data.Linq.SqlClient.TypeSystem, System.Data.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089").GetMethod("GetElementType", BindingFlags.NonPublic | BindingFlags.Static));
-        private static readonly MethodInfo method_Cast = typeof(Enumerable).GetMethod("Cast");
-
-
 
         public static Type GetElementType(Type type)
         {
@@ -31,7 +28,7 @@ namespace BB
 
         public static IEnumerable GenericCast(IEnumerable nonGeneric, Type type)
         {
-            return (IEnumerable)method_Cast.MakeGenericMethod(type).Invoke(null, new object[] { nonGeneric });
+            return (IEnumerable)EnumerableMethods.Cast.MakeGenericMethod(type).Invoke(null, new object[] { nonGeneric });
         }
     }
 
