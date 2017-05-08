@@ -21,12 +21,12 @@ namespace DatabaseManagement
 
         int OrdinalPosition { get; }
 
-        string DefaultValue { get; }
-
         int CharacterMaxLength { get; }
 
         int NumericPrecision { get; }
 
         int NumericScale { get; }
+
+        SQL.ScalarExpression DefaultValue { get; }
     }
 }

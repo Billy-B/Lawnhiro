@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DatabaseManagement.SQL;
 
 namespace DatabaseManagement.SqlServer
 {
@@ -20,8 +21,6 @@ namespace DatabaseManagement.SqlServer
         public bool IsIdentity { get; internal set; }
 
         public int OrdinalPosition { get; internal set; }
-
-        public string DefaultValue { get; internal set; }
 
         public int CharacterMaxLength { get; internal set; }
 
@@ -46,6 +45,8 @@ namespace DatabaseManagement.SqlServer
                 return Table.FullyQualifiedName + ".[" + Name + "]";
             }
         }
+
+        public ScalarExpression DefaultValue { get; internal set; }
 
         public override string ToString()
         {

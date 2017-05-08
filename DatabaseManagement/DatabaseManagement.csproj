@@ -77,7 +77,6 @@
     <Compile Include="SqlServer\View.cs" />
     <Compile Include="SQL\BinaryComparisonExpression.cs" />
     <Compile Include="SQL\ConditionalExpression.cs" />
-    <Compile Include="SQL\Clause.cs" />
     <Compile Include="SQL\ColumnAccessExpression.cs" />
     <Compile Include="SQL\Command.cs" />
     <Compile Include="SQL\ConstantExpression.cs" />
@@ -88,19 +87,16 @@
     <Compile Include="SQL\Function.cs" />
     <Compile Include="SQL\FunctionParameter.cs" />
     <Compile Include="SQL\Functions.cs" />
-    <Compile Include="SQL\InsertClause.cs" />
     <Compile Include="SQL\InsertStatement.cs" />
     <Compile Include="SQL\JoinedTableExpression.cs" />
     <Compile Include="SQL\LogicalBinaryExpression.cs" />
     <Compile Include="SQL\LogicalUnaryExpression.cs" />
     <Compile Include="SQL\ScalarBinaryExpression.cs" />
-    <Compile Include="SQL\OutputClause.cs" />
     <Compile Include="SQL\ParameterExpression.cs" />
     <Compile Include="SQL\ScalarExpression.cs" />
     <Compile Include="SQL\ScalarFunction.cs" />
     <Compile Include="SQL\ScalarUnaryExpression.cs" />
     <Compile Include="SQL\SelectStatement.cs" />
-    <Compile Include="SQL\SetClause.cs" />
     <Compile Include="SQL\Statement.cs" />
     <Compile Include="SQL\TableExpression.cs" />
     <Compile Include="SQL\TableValuedExpression.cs" />

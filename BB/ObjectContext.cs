@@ -6,12 +6,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BB
 {
     internal class ObjectContext
     {
-        private static readonly ConditionalWeakTable<ExecutionContext, ObjectContext> _table = new ConditionalWeakTable<ExecutionContext, ObjectContext>();
+        private static readonly ConditionalWeakTable<object, ObjectContext> _table = new ConditionalWeakTable<object, ObjectContext>();
 
         private readonly object _lock = new object();
 
@@ -29,7 +30,7 @@ namespace BB
         {
             get
             {
-                return _table.GetValue(Thread.CurrentThread.ExecutionContext, ctx => new ObjectContext());
+                return _table.GetValue((object)HttpContext.Current ?? Thread.CurrentThread.ExecutionContext, ctx => new ObjectContext());
             }
         }
 

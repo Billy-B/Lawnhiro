@@ -221,14 +221,16 @@ namespace DatabaseManagement.SqlServer
                     List<Column> allColumns = new List<Column>();
                     foreach (DataRow row in dt_allColumns.Rows)
                     {
+                        SqlDbType dbType = parseDbType((string)row["data_type"]);
+
                         allColumns.Add(new Column
                         {
                             Name = (string)row["name"],
                             Table = (Table)GetObjectById(Convert.ToInt32(row["object_id"])),
                             OrdinalPosition = Convert.ToInt32(row["ordinal_position"]),
-                            DefaultValue = row.Field<string>("column_default"),
+                            DefaultValue = buildDefaultValue(row.Field<string>("column_default"), dbType),
                             IsNullable = Convert.ToBoolean(row["is_nullable"]),
-                            DBType = parseDbType((string)row["data_type"]),
+                            DBType = dbType,
                             IsIdentity = Convert.ToBoolean(row["is_identity"]),
                             NumericPrecision = Convert.ToInt32(row["precision"]),
                             NumericScale = Convert.ToInt32(row["scale"]),
@@ -320,6 +322,49 @@ namespace DatabaseManagement.SqlServer
                     this._dbNameLower = this.Name.ToLowerInvariant();
                     int defaultSchemaId = Convert.ToInt32(dbInfoRow["DEFAULT_SCHEMA_ID"]);
                     this.DefaultSchema = this.Schemas.First(s => s.Id == defaultSchemaId);
+                }
+            }
+        }
+
+        private static SQL.ScalarExpression buildDefaultValue(string defaultValueDefinition, SqlDbType sqlDbType)
+        {
+            if (defaultValueDefinition == null)
+            {
+                return null;
+            }
+            while (defaultValueDefinition.StartsWith("(") && defaultValueDefinition.EndsWith(")"))
+            {
+                defaultValueDefinition = defaultValueDefinition.Substring(1, defaultValueDefinition.Length - 2);
+            }
+            if (defaultValueDefinition == string.Empty)
+            {
+                return null;
+            }
+            if (defaultValueDefinition.EndsWith(")")) // method call
+            {
+                // TODO: parse method call expression
+                return null;
+            }
+            else
+            {
+                try
+                {
+                    DbType dbType = TypeConverter.GetDbType(sqlDbType);
+                    Type type = TypeConverter.GetType(dbType);
+                    object value;
+                    if (type == typeof(bool) && (defaultValueDefinition == "0" || defaultValueDefinition == "1"))
+                    {
+                        value = defaultValueDefinition == "1";
+                    }
+                    else
+                    {
+                        value = Convert.ChangeType(defaultValueDefinition, type);
+                    }
+                    return SQL.Expression.Constant(value, dbType);
+                }
+                catch (Exception e)
+                {
+                    return null;
                 }
             }
         }
