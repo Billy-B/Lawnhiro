@@ -2,4 +2,3 @@ C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\bin\Release\BB.Web.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\bin\Release\BB.Web.pdb
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Release\BB.Web.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Release\BB.Web.pdb
-C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Web\obj\Release\BB.Web.csprojResolveAssemblyReference.cache
