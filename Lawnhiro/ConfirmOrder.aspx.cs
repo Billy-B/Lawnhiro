@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -62,7 +63,7 @@ namespace Lawnhiro
                 }
                 decimal price, mowableSqFt;
 
-                Residence existingResidence = Repository.Query<Residence>().ToArray().FirstOrDefault(r => r.GooglePlaceId == selectedPlace.PlaceId);
+                Residence existingResidence = Repository.Query<Residence>().FirstOrDefault(r => r.GooglePlaceId == selectedPlace.PlaceId);
 
                 if (existingResidence != null && existingResidence.PriceOverride.HasValue)
                 {
@@ -78,7 +79,7 @@ namespace Lawnhiro
                         return;
                     }
                     mowableSqFt = PriceCalculator.CalculateMowableSqFt(residenceInfo);
-                    ServiceArea serviceArea = Repository.Query<ServiceArea>().ToArray().FirstOrDefault(r => r.City == selectedPlace.City && r.State == selectedPlace.State);
+                    ServiceArea serviceArea = Repository.Query<ServiceArea>().FirstOrDefault(r => r.City == selectedPlace.City && r.State == selectedPlace.State);
                     if (serviceArea == null)
                     {
                         Response.Redirect("~/Order.aspx");
@@ -112,13 +113,17 @@ namespace Lawnhiro
             }
         }
 
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            this.Page.ClientScript.GetPostBackEventReference(paypalOrderId, string.Empty);
+        }
+
         protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
         {
             Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
             newOrder.Price = Price;
             string email = txt_email.Text.ToLower();
-            Customer[] allCustomers = Repository.Query<Customer>().ToArray();
-            Customer customer = allCustomers.SingleOrDefault(c => c.Email == email);
+            Customer customer = Repository.Query<Customer>().FirstOrDefault(c => c.Email == email);
             if (customer == null)
             {
                 customer = new Customer();
@@ -135,7 +140,7 @@ namespace Lawnhiro
                 residence.GooglePlaceId = selectedPlace.PlaceId;
                 residence.State = selectedPlace.State;
                 residence.Zip = selectedPlace.Zip;
-                HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().ToArray().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
+                HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
                 residence.Source = selectedSource;
                 if (txt_couponCode.Visible && !string.IsNullOrWhiteSpace(txt_couponCode.Text))
                 {

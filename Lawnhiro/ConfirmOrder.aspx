@@ -8,6 +8,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
+        <asp:ScriptManager runat="server" EnablePageMethods="true" />
         <div>
             <script src="https://www.paypalobjects.com/api/checkout.js"></script>
             <script src="../Scripts/jquery-3.1.1.min.js"></script>
@@ -17,7 +18,7 @@
                 }
                 paypal.Button.render(
                 {
-                    env: 'production', // Specify 'sandbox' for the test environment, 'production'
+                    env: 'sandbox', // Specify 'sandbox' for the test environment, 'production'
 
                     client: {
                         sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-',
@@ -49,8 +50,7 @@
                     onAuthorize: function (data, actions) {
                         // Execute the payment here, when the buyer approves the transaction
                         return actions.payment.execute().then(function () {
-                            // Show a success page to the buyer
-                            ///v1/payments/orders/order_id
+                            //alert(JSON.stringify(data));
                             document.getElementById('paypalOrderId').value = data.paymentID;
                             __doPostBack('paypalOrderId', 'ValueChanged');
                             alert('Your order has been submitted! Stay tuned for email updates.');
