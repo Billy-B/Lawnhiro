@@ -12,7 +12,11 @@ namespace DatabaseManagement.SQL
         public object Value { get; private set; }
 
         private DbType _type;
-        internal IDbDataParameter Parameter;
+
+        internal override ScalarExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitConstant(this);
+        }
 
         internal ConstantExpression(object value)
         {
@@ -34,11 +38,6 @@ namespace DatabaseManagement.SQL
         public override ExpressionType Type
         {
             get { return ExpressionType.Constant; }
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            return Enumerable.Empty<Expression>();
         }
 
         public override string ToString()
@@ -80,19 +79,6 @@ namespace DatabaseManagement.SQL
             foreach (byte b in bytes)
                 hex.AppendFormat("{0:x2}", b);
             return hex.ToString();
-        }
-
-        internal override string ToCommandString()
-        {
-            IDbDataParameter parameter = Parameter;
-            if (parameter == null)
-            {
-                return ToString();
-            }
-            else
-            {
-                return parameter.ParameterName;
-            }
         }
     }
 }

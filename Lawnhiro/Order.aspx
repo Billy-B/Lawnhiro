@@ -9,7 +9,7 @@
 <body style="background-color:transparent">
     <form id="form1" runat="server">
         <div>
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY&v=3.exp&sensor=false&libraries=places"></script>
+            <%--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY&v=3.exp&sensor=false&libraries=places"></script>
             <script src="../Scripts/jquery-3.1.1.min.js"></script>
 
             <script type="text/javascript">
@@ -32,14 +32,16 @@
                         __doPostBack('txt_address', 'TextChanged');
                     });
                 });
-            </script>
+            </script>--%>
             <div>
                 <b>Select your address:</b><br />
-                <asp:TextBox ID="txt_address" runat="server" Width="300px" ClientIDMode="Static" OnTextChanged="onAddressPicked" Font-Size="Medium" />
+                <BB:PlacePicker ID="addressPicker" runat="server" OnPlaceSelected="onAddressPicked" Width="300px" Font-Size="Medium" GoogleAPIKey="AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY" />
             </div>
             <asp:Label ID="label_invalidAddress" runat="server" ForeColor="Red" Visible="false" />
             <div id="div_orderConfirmation" runat="server" visible="false">
                 <asp:Label ID="label_price" runat="server" ForeColor="Red" Font-Size="X-Large" />
+                <br />
+                <b>Coupon Code: (optional)</b><asp:TextBox ID="txt_couponCode" runat="server" ClientIDMode="Static" />
                 <br />
                 <asp:Button ID="btn_placeOrder" runat="server" Text="I'll Take it!" OnClick="btn_placeOrder_Click" BackColor="Green" ForeColor="WhiteSmoke" Font-Size="Large" />
             </div>

@@ -88,6 +88,8 @@ namespace BB
                     ReferencedColumns = constraint.ReferencedColumns.ToList();
                     ColumnsAllowNull = AllowNull = ReferencedColumns.Any(c => c.IsNullable);
                 }
+                ForeignKey = constraint;
+                ReferencesPrimaryKey = constraint.ReferencedConstraint.IsPrimaryKey;
                 IsValid = isValid;
             }
         }

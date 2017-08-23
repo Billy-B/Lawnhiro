@@ -1,0 +1,4 @@
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Debug\BB.Measurement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Debug\BB.Measurement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Debug\BB.Measurement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Debug\BB.Measurement.pdb

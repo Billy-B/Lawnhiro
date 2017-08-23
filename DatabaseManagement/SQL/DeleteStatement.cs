@@ -20,22 +20,14 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
-        public override string ToCommandString()
+        internal override Statement Parameterize(Parameterizer p)
         {
-            string ret = "delete from " + Table;
-            if (WhereExpression != null)
+            return new DeleteStatement
             {
-                ret += WhereExpression.ToCommandString();
-            }
-            return ret;
-        }
-
-        internal override IEnumerable<Expression> EnumerateExpressions()
-        {
-            if (WhereExpression != null)
-            {
-                yield return WhereExpression;
-            }
+                Table = this.Table,
+                WhereExpression = p.VisitConditional(this.WhereExpression),
+                _parameterized = true
+            };
         }
     }
 }

@@ -18,7 +18,7 @@
                 }
                 paypal.Button.render(
                 {
-                    env: 'production', // Specify 'sandbox' for the test environment, 'production'
+                    env: 'sandbox', // Specify 'sandbox' for the test environment, 'production'
 
                     client: {
                         sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-',
@@ -67,6 +67,9 @@
                         <td><asp:Label ID="label_address" runat="server" /></td>
                     </tr>
                     <tr>
+                        <td><asp:Label ID="label_couponCode" runat="server" /></td>
+                    </tr>
+                    <tr>
                         <td><b>Price:</b></td>
                         <td><asp:Label ID="label_price" runat="server" /></td>
                     </tr>
@@ -76,10 +79,6 @@
                             <asp:TextBox ID="txt_email" runat="server" TextMode="Email" MaxLength="254" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" ForeColor="Red" Text="Required" />
                         </td>
-                    </tr>
-                    <tr id="div_couponCode" runat="server">
-                        <td><b>Coupon Code: (optional)</b></td>
-                        <td><asp:TextBox ID="txt_couponCode" runat="server" MaxLength="10" /></td>
                     </tr>
                     <tr id="div_headAboutUsSource" runat="server">
                         <td><b>How did you hear about us?</b></td>

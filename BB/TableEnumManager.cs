@@ -103,7 +103,7 @@ namespace BB
             }
             IdColumn = idColumn;
             NameColumn = nameColumn;
-            Expression[] selectExpressions = 
+            ScalarExpression[] selectExpressions = 
             {
                 Expression.Column(idColumn),
                 Expression.Column(nameColumn)

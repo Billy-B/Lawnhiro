@@ -12,6 +12,11 @@ namespace DatabaseManagement.SQL
         public ScalarExpression Right { get; internal set; }
         internal ExpressionType Operation { get; set; }
 
+        internal override ConditionalExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitBinaryCompare(this);
+        }
+
         internal BinaryComparisonExpression() { }
 
         public override ExpressionType Type
@@ -21,17 +26,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Left + " " + Expression.GetStringExpression(Operation) + " " + Right;
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            yield return Left;
-            yield return Right;
-        }
-
-        internal override string ToCommandString()
-        {
-            return Left.ToCommandString() + " " + Expression.GetStringExpression(Operation) + " " + Right.ToCommandString();
         }
     }
 }

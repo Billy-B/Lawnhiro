@@ -9,7 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-    
+        <BB:PlacePicker ID="placePicker1" runat="server" GoogleAPIKey="AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY" />
     </div>
     </form>
 </body>

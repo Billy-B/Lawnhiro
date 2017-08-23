@@ -55,10 +55,10 @@ namespace BB
 
         internal ColumnAccessExpression AccessColumn(IColumn column)
         {
-            if (_metadata.Finalized)
+            /*if (_metadata.Finalized)
             {
                 throw new InvalidOperationException("Metadata is finalized.");
-            }
+            }*/
             return Expression.Column(column, TableExpression);
         }
 
@@ -70,7 +70,7 @@ namespace BB
 
         public bool TryGetColumnIndex(IColumn column, out int index)
         {
-            if (!_metadata.Finalized)
+            if (!_metadata.ReadOnly)
             {
                 throw new InvalidOperationException("Metadata has not been finalized.");
             }

@@ -10,11 +10,6 @@ namespace BB.Web
 {
     public class LocalTime : WebControl
     {
-        protected override void OnPreRender(EventArgs e)
-        {
-            base.OnPreRender(e);
-        }
-
         private HiddenField _field = new HiddenField();
 
         protected override void OnInit(EventArgs e)

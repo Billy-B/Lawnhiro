@@ -42,6 +42,8 @@ namespace Lawnhiro.API
         public bool Active { get; set; }
         [Column]
         public bool Admin { get; set; }
+        [Column]
+        public bool SendNotifications { get; set; }
 
         public override string ToString()
         {

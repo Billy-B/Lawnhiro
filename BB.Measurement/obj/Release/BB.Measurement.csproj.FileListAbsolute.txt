@@ -1,0 +1,5 @@
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Release\BB.Measurement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Release\BB.Measurement.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measurement.csprojResolveAssemblyReference.cache
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measurement.dll
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measurement.pdb

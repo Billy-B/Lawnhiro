@@ -31,16 +31,17 @@ namespace BB
             yield return item;
         }
 
-        /*public static object InitializeObject(Type type, object dataSource)
+        internal static bool IsNullable(this Type type)
         {
-            object ret = FormatterServices.GetUninitializedObject(type);
-            throw new NotImplementedException();
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                return type.GetGenericTypeDefinition() == typeof(Nullable<>);
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        public static ObjectExtender GetExtender(this object obj)
-        {
-            throw new NotImplementedException();
-        }*/
 
         private static class ConditionalWeakTableFuncs<TKey, TValue>
             where TKey : class

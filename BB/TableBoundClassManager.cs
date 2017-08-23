@@ -123,7 +123,7 @@ namespace BB
                 //_metadata = metadata;
                 _repository = (DatabaseRepository)Repository;
                 QueryMetadata defaultMetadata = new QueryMetadata(this);
-                defaultMetadata.Finalize();
+                defaultMetadata.Finish();
                 _defaultMetadata = defaultMetadata;
             }
         }

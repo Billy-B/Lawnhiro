@@ -8,7 +8,7 @@ namespace DatabaseManagement.SQL
 {
     public class SelectStatement : Statement
     {
-        public IList<Expression> SelectedFields { get; internal set; }
+        public IList<ScalarExpression> SelectedFields { get; internal set; }
         public int? MaxRows { get; internal set; }
         public TableValuedExpression FromExpression { get; internal set; }
         public ConditionalExpression WhereExpression { get; internal set; }
@@ -48,73 +48,20 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
-        public override string ToCommandString()
-        {
-            string ret = "select ";
-            if (MaxRows != null)
-            {
-                ret += "top " + MaxRows + " ";
-            }
-            if (SelectedFields == null)
-            {
-                ret += "*";
-            }
-            else
-            {
-                ret += string.Join(",", SelectedFields.Select(e => e.ToCommandString()));
-            }
-            if (FromExpression != null)
-            {
-                ret += " from " + FromExpression.ToCommandString();
-            }
-            if (WhereExpression != null)
-            {
-                ret += " where " + WhereExpression.ToCommandString();
-            }
-            if (GroupByFields != null)
-            {
-                ret += " group by " + String.Join(",", GroupByFields.Select(e => e.ToCommandString()));
-            }
-            if (OrderByFields != null)
-            {
-                ret += " order by " + String.Join(",", OrderByFields.Select(e => e.ToCommandString()));
-            }
-            return ret;
-        }
-
         internal SelectStatement() { }
 
-        internal override IEnumerable<Expression> EnumerateExpressions()
+        internal override Statement Parameterize(Parameterizer p)
         {
-            if (SelectedFields != null)
+            return new SelectStatement
             {
-                foreach (Expression expr in SelectedFields)
-                {
-                    yield return expr;
-                }
-            }
-            if (FromExpression != null)
-            {
-                yield return FromExpression;
-            }
-            if (WhereExpression != null)
-            {
-                yield return WhereExpression;
-            }
-            if (OrderByFields != null)
-            {
-                foreach (FieldAccessExpression expr in OrderByFields)
-                {
-                    yield return expr;
-                }
-            }
-            if (GroupByFields != null)
-            {
-                foreach (FieldAccessExpression expr in GroupByFields)
-                {
-                    yield return expr;
-                }
-            }
+                FromExpression = p.VisitTable(this.FromExpression),
+                MaxRows = this.MaxRows,
+                GroupByFields = this.GroupByFields?.Select(e => (FieldAccessExpression)p.VisitScalar(e)).ToList().AsReadOnly(),
+                OrderByFields = this.OrderByFields?.Select(e => (FieldAccessExpression)p.VisitScalar(e)).ToList().AsReadOnly(),
+                SelectedFields = this.SelectedFields?.Select(e => p.VisitScalar(e)).ToList().AsReadOnly(),
+                WhereExpression = p.VisitConditional(this.WhereExpression),
+                _parameterized = true
+            };
         }
     }
 }

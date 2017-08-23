@@ -18,6 +18,8 @@ namespace DatabaseManagement.SqlServer
 
         public ForeignKeyRule DeleteRule { get; internal set; }
 
+        public UniqueConstraint ReferencedConstraint { get; internal set; }
+
         IReadOnlyList<IColumn> IForeignKeyConstraint.ForeignKeyColumns
         {
             get { return ForeignKeyColumns; }
@@ -31,6 +33,11 @@ namespace DatabaseManagement.SqlServer
         ITable IForeignKeyConstraint.ReferencedTable
         {
             get { return ReferencedTable; }
+        }
+
+        IUniqueConstraint IForeignKeyConstraint.ReferencedConstraint
+        {
+            get { return ReferencedConstraint; }
         }
 
         public override SchemaObjectType Type

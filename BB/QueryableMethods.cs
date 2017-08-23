@@ -23,6 +23,8 @@ namespace BB
         public static readonly MethodInfo LastMatchExpression;
         public static readonly MethodInfo LastOrDefault;
         public static readonly MethodInfo LastOrDefaultMatchExpression;
+        public static readonly MethodInfo LongCount;
+        public static readonly MethodInfo LongCountMatchExpression;
         public static readonly MethodInfo Single;
         public static readonly MethodInfo SingleMatchExpression;
         public static readonly MethodInfo SingleOrDefault;
@@ -46,6 +48,8 @@ namespace BB
             LastMatchExpression = allQueryableMethods.Single(m => m.Name == "Last" && m.GetParameters().Length == 2);
             LastOrDefault = allQueryableMethods.Single(m => m.Name == "LastOrDefault" && m.GetParameters().Length == 1);
             LastOrDefaultMatchExpression = allQueryableMethods.Single(m => m.Name == "LastOrDefault" && m.GetParameters().Length == 2);
+            LongCount = allQueryableMethods.Single(m => m.Name == "LongCount" && m.GetParameters().Length == 1);
+            LongCountMatchExpression = allQueryableMethods.Single(m => m.Name == "LongCount" && m.GetParameters().Length == 2);
             Single = allQueryableMethods.Single(m => m.Name == "Single" && m.GetParameters().Length == 1);
             SingleMatchExpression = allQueryableMethods.Single(m => m.Name == "Single" && m.GetParameters().Length == 2);
             SingleOrDefault = allQueryableMethods.Single(m => m.Name == "SingleOrDefault" && m.GetParameters().Length == 1);

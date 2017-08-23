@@ -11,9 +11,7 @@ namespace DatabaseManagement.SQL
     {
         public abstract ExpressionType Type { get; }
 
-        internal abstract string ToCommandString();
-
-        internal abstract IEnumerable<Expression> EnumerateSubExpressions();
+        public abstract Expression DispatchAny(ExpressionVisitor visitor);
 
         public static ScalarBinaryExpression Add(ScalarExpression left, ScalarExpression right)
         {
@@ -319,19 +317,14 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        /*public static ParameterExpression Parameter(string parameterName, DbType parameterType)
+        public static ParameterExpression Parameter(IDataParameter parameter)
         {
-            Utility.AssertNonNull(parameterName, "parameterName");
-            if (string.IsNullOrWhiteSpace(parameterName))
-            {
-                throw new ArgumentException("Cannot be blank", "parameterName");
-            }
+            Utility.AssertNonNull(parameter, "parameter");
             return new ParameterExpression
             {
-                ParameterName = parameterName,
-                ParameterType = parameterType
+                Parameter = parameter
             };
-        }*/
+        }
 
         public static ConstantExpression Constant(object value)
         {

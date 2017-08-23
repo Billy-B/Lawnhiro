@@ -11,14 +11,14 @@ namespace Lawnhiro.API
     public class ServiceArea
     {
         [Column]
-        public string City { get; set; }
+        public string City { get; }
         [Column]
-        public string State { get; set; }
+        public string State { get; }
         [Column]
-        public decimal BasePrice { get; set; }
+        public decimal BasePrice { get; }
         [Column]
-        public decimal PricePerSqFt { get; set; }
+        public decimal PricePerSqFt { get; }
         [Column]
-        public DateTime StartDate { get; set; }
+        public bool Active { get; }
     }
 }

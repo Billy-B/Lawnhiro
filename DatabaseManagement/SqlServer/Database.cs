@@ -316,6 +316,10 @@ namespace DatabaseManagement.SqlServer
                     {
                         u.ConstrainedColumns = new GenericCollection<Column>(allUcColMappings.Where(m => m.Constraint == u).OrderBy(m => m.Position).Select(m => m.Column));
                     }
+                    foreach(ForeignKeyConstraint fk in allForeignKeys)
+                    {
+                        fk.ReferencedConstraint = fk.ReferencedTable.Constraints.OfType<UniqueConstraint>().FirstOrDefault(c => c.ConstrainedColumns.All(col => fk.ReferencedColumns.Contains(col)));
+                    }
                     DataRow dbInfoRow = dt_dbInfo.Rows.Cast<DataRow>().Single();
                     this.DatabaseId = Convert.ToInt32(dbInfoRow["DB_ID"]);
                     this.Name = (string)dbInfoRow["DB_NAME"];

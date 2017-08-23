@@ -16,6 +16,11 @@ namespace DatabaseManagement.SQL
             get { return Column.DbType; }
         }
 
+        internal override ScalarExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitColumnAccess(this);
+        }
+
         public override ExpressionType Type
         {
             get { return ExpressionType.ColumnAccess; }
@@ -24,11 +29,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Column.ToString();
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            return Enumerable.Empty<Expression>();
         }
 
         internal ColumnAccessExpression() { }

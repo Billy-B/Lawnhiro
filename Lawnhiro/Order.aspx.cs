@@ -1,4 +1,5 @@
 ﻿using BB;
+using BB.Web;
 using Lawnhiro.API;
 using System;
 using System.Collections.Generic;
@@ -13,23 +14,6 @@ namespace Lawnhiro
 {
     public partial class Order : System.Web.UI.Page
     {
-        private Residence ExistingResidence
-        {
-            get { return (Residence)Session["existingResidence"]; }
-            set { Session["existingResidence"] = value; }
-        }
-
-        private Place SelectedPlace
-        {
-            get { return (Place)Session["selectedPlace"]; }
-            set { Session["selectedPlace"] = value; }
-        }
-
-        private decimal MowableSqFt
-        {
-            get { return (decimal)Session["MowableSqFt"]; }
-            set { Session["MowableSqFt"] = value; }
-        }
 
         private decimal Price
         {
@@ -42,48 +26,18 @@ namespace Lawnhiro
             ClientScript.GetPostBackEventReference(this, string.Empty);
         }
 
-        class GooglePlace
+        protected void onAddressPicked(object sender, PlaceSelectedEventArgs e)
         {
-            public string place_id;
-            public addressComponent[] address_components;
-        }
-
-        class addressComponent
-        {
-            public string long_name, short_name;
-            public string[] types;
-        }
-
-        protected void onAddressPicked(object sender, EventArgs e)
-        {
-            string json = addressData.Value;
-            var serializer = new JavaScriptSerializer();
-            GooglePlace googlePlace = serializer.Deserialize<GooglePlace>(json);
-            addressComponent[] components = googlePlace.address_components;
-            addressComponent streetNumber = components.FirstOrDefault(c => c.types.Contains("street_number"));
-            addressComponent route = components.FirstOrDefault(c => c.types.Contains("route"));
-            addressComponent locality = components.FirstOrDefault(c => c.types.Contains("locality"));
-            addressComponent state = components.FirstOrDefault(c => c.types.Contains("administrative_area_level_1"));
-            addressComponent postalCode = components.FirstOrDefault(c => c.types.Contains("postal_code"));
+            Place place = e.SelectedPlace;
             ZillowResidenceInfo residenceInfo;
-            Place place;
-            if (streetNumber == null || route == null || locality == null || state == null || postalCode == null)
+            if (place.StreetNumber == null || place.StreetName == null || place.City == null || place.StateProvinceAbbreviation == null || place.PostalCode == null)
             {
                 residenceInfo = null;
-                place = null;
             }
             else
             {
-                place = new Place
-                {
-                    Address = streetNumber.long_name + " " + route.long_name,
-                    City = locality.long_name,
-                    State = state.short_name,
-                    Zip = postalCode.long_name,
-                    PlaceId = googlePlace.place_id
-                };
-                string address = streetNumber.long_name + " " + route.long_name;
-                residenceInfo = ZillowResidenceInfo.GetResidenceInfo(place.Address, place.City, place.State, place.Zip);
+                string address = place.StreetNumber + " " + place.StreetName;
+                residenceInfo = ZillowResidenceInfo.GetResidenceInfo(address, place.City, place.StateProvinceAbbreviation, place.PostalCode);
             }
             if (residenceInfo == null)
             {
@@ -94,7 +48,7 @@ namespace Lawnhiro
             else
             {
                 ServiceArea[] areas = Repository.Query<ServiceArea>().ToArray();
-                ServiceArea selectedArea = areas.FirstOrDefault(a => a.City == place.City && a.State == place.State && a.StartDate <= DateTime.Today);
+                ServiceArea selectedArea = areas.FirstOrDefault(a => a.City == place.City && a.State == place.StateProvinceAbbreviation && a.Active);
                 if (selectedArea == null)
                 {
                     label_invalidAddress.Text = "It looks like we haven't expanded to your city yet.  Sign up for updates to be the first to know where we go next!";
@@ -116,19 +70,26 @@ namespace Lawnhiro
                     {
                         price = PriceCalculator.CalculatePrice(selectedArea, mowableSqFt);
                     }
-                    MowableSqFt = mowableSqFt;
-                    Price = price;
-                    ExistingResidence = existingResidence;
-                    SelectedPlace = place;
-                    NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                    queryString["address"] = place.Address;
+                    Price = price;
+                    label_price.Text = $"Your lawn is only {price.ToString("C")}!";
+
+                    NameValueCollection queryString = HttpUtility.ParseQueryString(string.Empty);
+
+                    queryString["address"] = place.StreetNumber + " " + place.StreetName;
                     queryString["city"] = place.City;
-                    queryString["state"] = place.State;
-                    queryString["zip"] = place.Zip;
+                    queryString["state"] = place.StateProvinceAbbreviation;
+                    queryString["zip"] = place.PostalCode;
                     queryString["placeId"] = place.PlaceId;
-                    btn_placeOrder.OnClientClick = $"javascript:window.open('ConfirmOrder.aspx?{queryString}');";
-                    label_price.Text = "Your lawn is only " + price.ToString("C") + "!";
+
+                    string couponCode = txt_couponCode.Text;
+
+                    if (!string.IsNullOrWhiteSpace(couponCode))
+                    {
+                        queryString["couponCode"] = couponCode;
+                    }
+                    string script = $"javascript:window.open('ConfirmOrder.aspx?{queryString}&couponCode=' + document.getElementById('{txt_couponCode.ClientID}').value);";
+                    btn_placeOrder.OnClientClick = script;
                 }
             }
         }
@@ -136,94 +97,28 @@ namespace Lawnhiro
         private void clearPage()
         {
             div_orderConfirmation.Visible = false;
-            txt_address.Text = "";
+            addressPicker.Text = "";
         }
 
         protected void btn_placeOrder_Click(object sender, EventArgs e)
         {
-            /*Place selectedPlace = SelectedPlace;
-            //string redirect = 
-            Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
-            newOrder.Price = Price;
-            string email = txt_email.Text.ToLower();
-            Customer[] allCustomers = Repository.Query<Customer>().ToArray();
-            Customer customer = allCustomers.SingleOrDefault(c => c.Email == email);
-            if (customer == null)
+            /*NameValueCollection queryString = HttpUtility.ParseQueryString(string.Empty);
+            Place place = addressPicker.SelectedPlace;
+            queryString["address"] = place.StreetNumber + " " + place.StreetName;
+            queryString["city"] = place.City;
+            queryString["state"] = place.StateProvinceAbbreviation;
+            queryString["zip"] = place.PostalCode;
+            queryString["placeId"] = place.PlaceId;
+
+            string couponCode = txt_couponCode.Text;
+
+            if (!string.IsNullOrWhiteSpace(couponCode))
             {
-                customer = new Customer();
-                customer.Email = email;
-                Repository.Add(customer);
+                queryString["couponCode"] = couponCode;
             }
-            Residence residence = ExistingResidence;
-            if (residence == null)
-            {
-                Place selectedPlace = SelectedPlace;
-                residence = new Residence();
-                residence.Address = selectedPlace.Address;
-                residence.City = selectedPlace.City;
-                residence.GooglePlaceId = selectedPlace.PlaceId;
-                residence.State = selectedPlace.State;
-                residence.Zip = selectedPlace.Zip;
-                HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().ToArray().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
-                residence.Source = selectedSource;
-                residence.CouponCode = txt_couponCode.Text;
-                Repository.Add(residence);
-            }
-            residence.MowableSqFt = MowableSqFt;
-            newOrder.Customer = customer;
-            newOrder.Residence = residence;
-            newOrder.CustomerNotes = txt_notes.Text;
-            newOrder.Price = Price;
-            newOrder.Placed = DateTime.Now;
-            newOrder.PayPalOrderId = "TESTTESTTEST";
-            
-            Repository.Add(newOrder);
-            Repository.CommitChanges();*/
+            string script = $"javascript:window.open('ConfirmOrder.aspx?{queryString}');";
+            ClientScript.RegisterClientScriptBlock(typeof(Page), new Guid().ToString(), script, true);*/
             clearPage();
         }
-
-        /*protected void paypalOrderId_ValueChanged(object sender, EventArgs e)
-        {
-            Lawnhiro.API.Order newOrder = new Lawnhiro.API.Order();
-            newOrder.Price = Price;
-            string email = txt_email.Text.ToLower();
-            Customer[] allCustomers = Repository.Query<Customer>().ToArray();
-            Customer customer = allCustomers.SingleOrDefault(c => c.Email == email);
-            if (customer == null)
-            {
-                customer = new Customer();
-                customer.Email = email;
-                Repository.Add(customer);
-            }
-            Residence residence = ExistingResidence;
-            if (residence == null)
-            {
-                Place selectedPlace = SelectedPlace;
-                residence = new Residence();
-                residence.Address = selectedPlace.Address;
-                residence.City = selectedPlace.City;
-                residence.GooglePlaceId = selectedPlace.PlaceId;
-                residence.State = selectedPlace.State;
-                residence.Zip = selectedPlace.Zip;
-                HeardAboutUsSource selectedSource = Repository.Query<HeardAboutUsSource>().ToArray().First(s => s.Name == ddl_heardAboutUsSource.SelectedValue);
-                residence.Source = selectedSource;
-                if(txt_couponCode.Visible && !string.IsNullOrWhiteSpace(txt_couponCode.Text))
-                {
-                    residence.CouponCode = txt_couponCode.Text;
-                }
-                Repository.Add(residence);
-            }
-            newOrder.Customer = customer;
-            newOrder.Residence = residence;
-            newOrder.CustomerNotes = txt_notes.Text;
-            newOrder.Price = Price;
-            newOrder.Placed = DateTime.Now;
-            newOrder.PayPalOrderId = paypalOrderId.Value;
-            Repository.Add(newOrder);
-            Repository.CommitChanges();
-            clearPage();
-        }*/
-
-        
     }
 }

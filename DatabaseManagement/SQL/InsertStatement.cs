@@ -27,20 +27,16 @@ namespace DatabaseManagement.SQL
             return ret;
         }
 
-        public override string ToCommandString()
+        internal override Statement Parameterize(Parameterizer p)
         {
-            string ret = "insert into " + Table + " (" + string.Join(",", InsertColumns) + ")";
-            if (OutputColumns != null)
+            return new InsertStatement
             {
-                ret += " output " + string.Join(",", OutputColumns.Select(c => "inserted." + c.Name));
-            }
-            ret += " values(" + string.Join(", ", Values.Select(v => v.ToCommandString())) + ")";
-            return ret;
-        }
-
-        internal override IEnumerable<Expression> EnumerateExpressions()
-        {
-            return Values;
+                InsertColumns = this.InsertColumns,
+                OutputColumns = this.OutputColumns,
+                Table = this.Table,
+                Values = this.Values.Select(e => p.VisitScalar(e)).ToList().AsReadOnly(),
+                _parameterized = true
+            };
         }
     }
 }

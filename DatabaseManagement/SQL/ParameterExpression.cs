@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace DatabaseManagement.SQL
 {
-    /*public class ParameterExpression : ScalarExpression
+    public class ParameterExpression : ScalarExpression
     {
-        public string ParameterName { get; internal set; }
+        public IDataParameter Parameter { get; internal set; }
 
-        public object Value { get; internal set; }
-
-        internal DbType ParameterType { get; set; }
+        internal override ScalarExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitParameter(this);
+        }
 
         public override DbType DbType
         {
-            get { return ParameterType; }
+            get { return Parameter.DbType; }
         }
 
         public override ExpressionType Type
@@ -29,17 +30,7 @@ namespace DatabaseManagement.SQL
 
         public override string ToString()
         {
-            return ParameterName;
+            return Parameter.ParameterName;
         }
-
-        internal override string ToCommandString()
-        {
-            return ParameterName;
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            return Enumerable.Empty<Expression>();
-        }
-    }*/
+    }
 }

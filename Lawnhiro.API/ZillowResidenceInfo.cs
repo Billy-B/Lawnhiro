@@ -14,7 +14,7 @@ namespace Lawnhiro.API
     {
         public int ZillowId { get; private set; }
         public decimal? LotSizeSqFt { get; private set; }
-        public decimal FinishedSqFt { get; private set; }
+        public decimal? FinishedSqFt { get; private set; }
         public decimal? NumberOfFloors { get; private set; }
 
         const string ZWS_ID = "X1-ZWz1fafu2i84y3_1hdll";
@@ -33,7 +33,7 @@ namespace Lawnhiro.API
             else
             {
                 XmlElement lotSqFtNode = resultsNode["lotSizeSqFt"];
-                decimal? lotSqFt;
+                decimal? lotSqFt, finishedSqFt;
                 if (lotSqFtNode == null)
                 {
                     lotSqFt = null;
@@ -42,7 +42,15 @@ namespace Lawnhiro.API
                 {
                     lotSqFt = decimal.Parse(lotSqFtNode.InnerText);
                 }
-                decimal finsihedSqFt = decimal.Parse(resultsNode["finishedSqFt"].InnerText);
+                XmlElement finishedSqFtNode = resultsNode["finishedSqFt"];
+                if (finishedSqFtNode == null)
+                {
+                    finishedSqFt = null;
+                }
+                else
+                {
+                    finishedSqFt = decimal.Parse(finishedSqFtNode.InnerText);
+                }
                 int zpid = int.Parse(resultsNode["zpid"].InnerText);
                 XmlDocument updatedPropertyDetails = new XmlDocument();
                 updatedPropertyDetails.Load($"http://www.zillow.com/webservice/GetUpdatedPropertyDetails.htm?zws-id={ZWS_ID}&zpid={zpid}");
@@ -60,7 +68,7 @@ namespace Lawnhiro.API
                 {
                     ZillowId = zpid,
                     LotSizeSqFt = lotSqFt,
-                    FinishedSqFt = finsihedSqFt,
+                    FinishedSqFt = finishedSqFt,
                     NumberOfFloors = numFloors
                 };
             }

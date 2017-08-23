@@ -14,7 +14,6 @@ namespace BB
     {
         private static MethodInfo _dynamicMethodHandleAccessor = typeof(DynamicMethod).GetMethod("GetMethodDescriptor", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private static List<object> _objs = new List<object>();
 
         [Flags]
         private enum MethodDescClassification : ushort

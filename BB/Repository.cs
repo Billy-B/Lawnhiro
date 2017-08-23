@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace BB
 {
-    public static class Repository
+    public abstract class Repository
     {
+
         public static IQueryable<T> Query<T>()
         {
             Type type = typeof(T);

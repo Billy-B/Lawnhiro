@@ -14,6 +14,27 @@ namespace DatabaseManagement.SQL
 
         public ConditionalExpression WhereExpression { get; internal set; }
 
+        internal override Statement Parameterize(Parameterizer p)
+        {
+            if (_parameterized)
+            {
+                return this;
+            }
+            IList<KeyValuePair<IColumn, ScalarExpression>> initialList = ColumnsAndValues;
+            List<KeyValuePair<IColumn, ScalarExpression>> updatedList = new List<KeyValuePair<IColumn, ScalarExpression>>();
+            foreach (var kvp in initialList)
+            {
+                updatedList.Add(new KeyValuePair<IColumn, ScalarExpression>(kvp.Key, p.VisitScalar(kvp.Value)));
+            }
+            return new UpdateStatement
+            {
+                TableToUpdate = this.TableToUpdate,
+                ColumnsAndValues = updatedList.AsReadOnly(),
+                WhereExpression = p.VisitConditional(WhereExpression),
+                _parameterized = true
+            };
+        }
+
         public override string ToString()
         {
             string ret = "update " + TableToUpdate + " set " + string.Join(", ", ColumnsAndValues.Select(kvp => kvp.Key + "=" + kvp.Value));
@@ -22,28 +43,6 @@ namespace DatabaseManagement.SQL
                 ret += " where " + WhereExpression;
             }
             return ret;
-        }
-
-        public override string ToCommandString()
-        {
-            string ret = "update " + TableToUpdate + " set " + string.Join(", ", ColumnsAndValues.Select(kvp => kvp.Key + "=" + kvp.Value.ToCommandString()));
-            if (WhereExpression != null)
-            {
-                ret += " where " + WhereExpression.ToCommandString();
-            }
-            return ret;
-        }
-
-        internal override IEnumerable<Expression> EnumerateExpressions()
-        {
-            foreach (var kvp in ColumnsAndValues)
-            {
-                yield return kvp.Value;
-            }
-            if (WhereExpression != null)
-            {
-                yield return WhereExpression;
-            }
         }
     }
 }

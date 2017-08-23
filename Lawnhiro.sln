@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseManagement", "Datab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BB.Web", "BB.Web\BB.Web.csproj", "{98C876BC-4428-47D2-9BD4-CA50B97EC2AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BB.Measure", "BB.Measurement\BB.Measure.csproj", "{6EEC00B3-E6E5-4284-8A95-E3EF3C047527}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BB.Test", "..\..\Visual Studio 2013\Projects\BB.Test\BB.Test\BB.Test.csproj", "{B41081C0-B4BA-4D88-AB68-4DB50DB29FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{98C876BC-4428-47D2-9BD4-CA50B97EC2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98C876BC-4428-47D2-9BD4-CA50B97EC2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98C876BC-4428-47D2-9BD4-CA50B97EC2AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EEC00B3-E6E5-4284-8A95-E3EF3C047527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EEC00B3-E6E5-4284-8A95-E3EF3C047527}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EEC00B3-E6E5-4284-8A95-E3EF3C047527}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EEC00B3-E6E5-4284-8A95-E3EF3C047527}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B41081C0-B4BA-4D88-AB68-4DB50DB29FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B41081C0-B4BA-4D88-AB68-4DB50DB29FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B41081C0-B4BA-4D88-AB68-4DB50DB29FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B41081C0-B4BA-4D88-AB68-4DB50DB29FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

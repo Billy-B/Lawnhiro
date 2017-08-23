@@ -60,6 +60,8 @@ namespace BB
         {
             switch (array.Length)
             {
+                case 0:
+                    throw new InvalidOperationException("0 items in primary key?");
                 case 1:
                     return array[0];
                 case 2:

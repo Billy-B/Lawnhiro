@@ -13,5 +13,6 @@ namespace DatabaseManagement
         IReadOnlyList<IColumn> ForeignKeyColumns { get; }
         IReadOnlyList<IColumn> ReferencedColumns { get; }
         ITable ReferencedTable { get; }
+        IUniqueConstraint ReferencedConstraint { get; }
     }
 }

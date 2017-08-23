@@ -13,6 +13,11 @@ namespace DatabaseManagement.SQL
 
         internal LogicalUnaryExpression() { }
 
+        internal override ConditionalExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitLogicalUnary(this);
+        }
+
         public override ExpressionType Type
         {
             get { return Operation; }
@@ -20,16 +25,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Expression.GetStringExpression(Operation) + "(" + Operand + ")";
-        }
-
-        internal override string ToCommandString()
-        {
-            return Expression.GetStringExpression(Operation) + "(" + Operand.ToCommandString() + ")";
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            yield return Operand;
         }
     }
 }

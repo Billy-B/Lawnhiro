@@ -16,7 +16,7 @@ namespace BB
 
         public QueryNode FirstNode { get; private set; }
 
-        public bool Finalized { get; private set; }
+        public bool ReadOnly { get; private set; }
 
         internal ListInternal<ColumnAccessExpression> _columnExpressions = new ListInternal<ColumnAccessExpression>();
 
@@ -24,7 +24,7 @@ namespace BB
 
         private object _lock = new object();
 
-        public void Finalize()
+        public void Finish()
         {
             lock (_lock)
             {
@@ -83,7 +83,7 @@ namespace BB
                 }
                 _columnExpressions = columnExpressions;
                 TableExpression = expression;
-                Finalized = true;
+                ReadOnly = true;
             }
         }
 
@@ -91,7 +91,7 @@ namespace BB
         {
             lock (_lock)
             {
-                if (Finalized)
+                if (ReadOnly)
                 {
                     throw new InvalidOperationException("Metadata is finalized, cannot add nodes.");
                 }
@@ -151,7 +151,7 @@ namespace BB
             }
             ret.TableExpression = firstNode.TableExpression;
             ret.FirstNode = firstNode;
-            ret.Finalized = true;
+            ret.ReadOnly = true;
             ret._columnExpressions = columnExpressions;
             return ret;
         }

@@ -9,66 +9,29 @@ namespace DatabaseManagement.SQL
 {
     public abstract class Statement
     {
+        internal abstract Statement Parameterize(Parameterizer p);
+
+        internal bool _parameterized;
+
         public void Prepare(IDbCommand command)
         {
             Prepare(command, true);
         }
 
-        public abstract string ToCommandString();
-
-        internal string CommandString
-        {
-            get { return ToCommandString(); }
-        }
-
         public void Prepare(IDbCommand command, bool parameterizeConstants)
         {
             command.Parameters.Clear();
-            Expression[] allExpressions = enumerateExpressionsRecursive(EnumerateExpressions()).ToArray();
-            Dictionary<object, IDbDataParameter> parametersIndexedByValue = new Dictionary<object, IDbDataParameter>();
             if (parameterizeConstants)
             {
-                int paramCounter = 0;
-                foreach (Expression expression in allExpressions)
-                {
-                    ConstantExpression asConstExpression = expression as ConstantExpression;
-                    if (asConstExpression != null)
-                    {
-                        IDbDataParameter parameter;
-                        if (!parametersIndexedByValue.TryGetValue(asConstExpression.Value, out parameter))
-                        {
-                            parameter = command.CreateParameter();
-                            parameter.Value = asConstExpression.Value;
-                            parameter.ParameterName = "@p_" + paramCounter;
-                            paramCounter++;
-                            parametersIndexedByValue.Add(asConstExpression.Value, parameter);
-                        }
-                        asConstExpression.Parameter = parameter;
-                    }
-                }
-                foreach (IDbDataParameter parameter in parametersIndexedByValue.Values)
-                {
-                    command.Parameters.Add(parameter);
-                }
+                Parameterizer p = new Parameterizer(command);
+                Statement parameterized = this.Parameterize(p);
+                command.CommandText = parameterized.ToString();
             }
-            command.CommandText = this.ToCommandString();
-        }
-
-        internal abstract IEnumerable<Expression> EnumerateExpressions();
-
-        private static IEnumerable<Expression> enumerateExpressionsRecursive(IEnumerable<Expression> expressions)
-        {
-            foreach (Expression expr in expressions)
+            else
             {
-                yield return expr;
-                foreach (Expression sub in enumerateExpressionsRecursive(expr.EnumerateSubExpressions()))
-                {
-                    yield return sub;
-                }
+                command.CommandText = this.ToString();
             }
         }
-
-        //public abstract void Enumerate
 
         public static InsertStatement InsertInto(ITable table, IEnumerable<IColumn> columnsToInsert, IEnumerable<ScalarExpression> values)
         {
@@ -152,7 +115,7 @@ namespace DatabaseManagement.SQL
                 FromExpression = tableExpression
             };
         }
-        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<Expression> selections)
+        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<ScalarExpression> selections)
         {
             Utility.AssertNonNull(tableExpression, "tableExpression");
             Utility.AssertNonNull(selections, "selections");
@@ -163,7 +126,7 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<Expression> selections, ConditionalExpression whereExpression)
+        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<ScalarExpression> selections, ConditionalExpression whereExpression)
         {
             Utility.AssertNonNull(tableExpression, "tableExpression");
             Utility.AssertNonNull(selections, "selections");
@@ -176,7 +139,7 @@ namespace DatabaseManagement.SQL
             };
         }
 
-        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<Expression> selections, int maxRows, ConditionalExpression whereExpression)
+        public static SelectStatement SelectFrom(TableValuedExpression tableExpression, IEnumerable<ScalarExpression> selections, int maxRows, ConditionalExpression whereExpression)
         {
             Utility.AssertNonNull(tableExpression, "tableExpression");
             Utility.AssertNonNull(selections, "selections");

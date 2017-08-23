@@ -8,5 +8,11 @@ namespace DatabaseManagement.SQL
 {
     public abstract class ConditionalExpression : Expression
     {
+        public override Expression DispatchAny(ExpressionVisitor visitor)
+        {
+            return visitor.VisitConditional(this);
+        }
+
+        internal abstract ConditionalExpression Dispatch(ExpressionVisitor visitor);
     }
 }

@@ -16,6 +16,11 @@ namespace DatabaseManagement.SQL
 
         internal DbType ResultantDbType { get; set; }
 
+        internal override ScalarExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitScalarBinary(this);
+        }
+
         public override ExpressionType Type
         {
             get { return Operation; }
@@ -29,17 +34,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Left + " " + Expression.GetStringExpression(Operation) + " " + Right;
-        }
-
-        internal override string ToCommandString()
-        {
-            return Left.ToCommandString() + " " + Expression.GetStringExpression(Operation) + " " + Right.ToCommandString();
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            yield return Left;
-            yield return Right;
         }
     }
 }

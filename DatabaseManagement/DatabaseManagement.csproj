@@ -83,6 +83,7 @@
     <Compile Include="SQL\DeleteStatement.cs" />
     <Compile Include="SQL\Expression.cs" />
     <Compile Include="SQL\ExpressionType.cs" />
+    <Compile Include="SQL\ExpressionVisitor.cs" />
     <Compile Include="SQL\FieldAccessExpression.cs" />
     <Compile Include="SQL\Function.cs" />
     <Compile Include="SQL\FunctionParameter.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="SQL\JoinedTableExpression.cs" />
     <Compile Include="SQL\LogicalBinaryExpression.cs" />
     <Compile Include="SQL\LogicalUnaryExpression.cs" />
+    <Compile Include="SQL\Parameterizer.cs" />
     <Compile Include="SQL\ScalarBinaryExpression.cs" />
     <Compile Include="SQL\ParameterExpression.cs" />
     <Compile Include="SQL\ScalarExpression.cs" />

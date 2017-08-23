@@ -151,7 +151,6 @@
     <Compile Include="PayPalTest.aspx.designer.cs">
       <DependentUpon>PayPalTest.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Place.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

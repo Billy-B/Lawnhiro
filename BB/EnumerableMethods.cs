@@ -16,6 +16,7 @@ namespace BB
         public static readonly MethodInfo Count;
         public static readonly MethodInfo Cast;
         public static readonly MethodInfo CountMatchExpression;
+        public static readonly MethodInfo Empty;
         public static readonly MethodInfo First;
         public static readonly MethodInfo FirstMatchExpression;
         public static readonly MethodInfo FirstOrDefault;
@@ -24,6 +25,8 @@ namespace BB
         public static readonly MethodInfo LastMatchExpression;
         public static readonly MethodInfo LastOrDefault;
         public static readonly MethodInfo LastOrDefaultMatchExpression;
+        public static readonly MethodInfo LongCount;
+        public static readonly MethodInfo LongCountMatchExpression;
         public static readonly MethodInfo Single;
         public static readonly MethodInfo SingleMatchExpression;
         public static readonly MethodInfo SingleOrDefault;
@@ -40,6 +43,7 @@ namespace BB
             Contains = allEnumerableMethods.Single(m => m.Name == "Contains" && m.GetParameters().Length == 2);
             Count = allEnumerableMethods.Single(m => m.Name == "Count" && m.GetParameters().Length == 1);
             CountMatchExpression = allEnumerableMethods.Single(m => m.Name == "Count" && m.GetParameters().Length == 2);
+            Empty = allEnumerableMethods.Single(m => m.Name == "Empty");
             First = allEnumerableMethods.Single(m => m.Name == "First" && m.GetParameters().Length == 1);
             FirstMatchExpression = allEnumerableMethods.Single(m => m.Name == "First" && m.GetParameters().Length == 2);
             FirstOrDefault = allEnumerableMethods.Single(m => m.Name == "FirstOrDefault" && m.GetParameters().Length == 1);
@@ -48,6 +52,8 @@ namespace BB
             LastMatchExpression = allEnumerableMethods.Single(m => m.Name == "Last" && m.GetParameters().Length == 2);
             LastOrDefault = allEnumerableMethods.Single(m => m.Name == "LastOrDefault" && m.GetParameters().Length == 1);
             LastOrDefaultMatchExpression = allEnumerableMethods.Single(m => m.Name == "LastOrDefault" && m.GetParameters().Length == 2);
+            LongCount = allEnumerableMethods.Single(m => m.Name == "LongCount" && m.GetParameters().Length == 1);
+            LongCountMatchExpression = allEnumerableMethods.Single(m => m.Name == "LongCount" && m.GetParameters().Length == 2);
             Single = allEnumerableMethods.Single(m => m.Name == "Single" && m.GetParameters().Length == 1);
             SingleMatchExpression = allEnumerableMethods.Single(m => m.Name == "Single" && m.GetParameters().Length == 2);
             SingleOrDefault = allEnumerableMethods.Single(m => m.Name == "SingleOrDefault" && m.GetParameters().Length == 1);

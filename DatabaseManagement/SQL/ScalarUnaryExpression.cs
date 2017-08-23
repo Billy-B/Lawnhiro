@@ -11,6 +11,12 @@ namespace DatabaseManagement.SQL
         public ScalarExpression Operand { get; internal set; }
         internal ExpressionType Operation { get; set; }
         internal ScalarUnaryExpression() { }
+
+        internal override ScalarExpression Dispatch(ExpressionVisitor visitor)
+        {
+            return visitor.VisitScalarUnary(this);
+        }
+
         public override ExpressionType Type
         {
             get { return Operation; }
@@ -22,15 +28,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Expression.GetStringExpression(Operation) + "(" + Operand + ")";
-        }
-        internal override string ToCommandString()
-        {
-            return Expression.GetStringExpression(Operation) + "(" + Operand.ToCommandString() + ")";
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            yield return Operand;
         }
     }
 }

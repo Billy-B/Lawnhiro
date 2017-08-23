@@ -22,13 +22,13 @@ namespace Lawnhiro {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// txt_address control.
+        /// addressPicker control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_address;
+        protected global::BB.Web.PlacePicker addressPicker;
         
         /// <summary>
         /// label_invalidAddress control.
@@ -56,6 +56,15 @@ namespace Lawnhiro {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label label_price;
+        
+        /// <summary>
+        /// txt_couponCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_couponCode;
         
         /// <summary>
         /// btn_placeOrder control.

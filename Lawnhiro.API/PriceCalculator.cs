@@ -17,9 +17,10 @@ namespace Lawnhiro.API
 
             decimal estimatedFootprint;
             decimal lotSqFt;
+            decimal finishedSqFt = info.FinishedSqFt ?? 2600;
             if (info.LotSizeSqFt == null)
             {
-                lotSqFt = info.FinishedSqFt * 3;
+                lotSqFt = finishedSqFt * 3;
             }
             else
             {
@@ -27,11 +28,11 @@ namespace Lawnhiro.API
             }
             if (info.NumberOfFloors == null) // actual number of floors not available, must estimate.
             {
-                estimatedFootprint = Math.Min(info.FinishedSqFt, lotSqFt / 2);
+                estimatedFootprint = Math.Min(finishedSqFt, lotSqFt / 2);
             }
             else
             {
-                estimatedFootprint = (info.FinishedSqFt / (decimal)info.NumberOfFloors);
+                estimatedFootprint = (finishedSqFt / (decimal)info.NumberOfFloors);
             }
             return lotSqFt - estimatedFootprint;
         }

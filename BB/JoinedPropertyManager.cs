@@ -16,7 +16,7 @@ namespace BB
 
         public TableBoundClassManager ReferencedManager { get; internal set; }
 
-        public bool ReferencesPrimaryKey { get; private set; }
+        public bool ReferencesPrimaryKey { get; internal set; }
 
         public bool AllowNull { get; internal set; }
 

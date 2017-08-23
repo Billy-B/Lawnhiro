@@ -10,6 +10,11 @@ namespace DatabaseManagement.SQL
     {
         public new ITable Table { get; internal set; }
 
+        internal override TableValuedExpression Dispatch(ExpressionVisitor node)
+        {
+            return node.VisitTableAccess(this);
+        }
+
         internal TableExpression() { }
 
         public override ExpressionType Type
@@ -20,16 +25,6 @@ namespace DatabaseManagement.SQL
         public override string ToString()
         {
             return Table.ToString();
-        }
-
-        internal override string ToCommandString()
-        {
-            return ToString();
-        }
-
-        internal override IEnumerable<Expression> EnumerateSubExpressions()
-        {
-            return Enumerable.Empty<Expression>();
         }
     }
 }

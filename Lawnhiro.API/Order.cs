@@ -34,5 +34,7 @@ namespace Lawnhiro.API
         public string PayPalOrderId { get; set; }
         [Column]
         public bool Completed { get; set; }
+        [ForeignKey]
+        public Coupon Coupon { get; set; }
     }
 }

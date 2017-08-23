@@ -9,5 +9,12 @@ namespace DatabaseManagement.SQL
     public abstract class TableValuedExpression : Expression
     {
         public string Alias { get; internal set; }
+
+        public override Expression DispatchAny(ExpressionVisitor visitor)
+        {
+            return visitor.VisitTable(this);
+        }
+
+        internal abstract TableValuedExpression Dispatch(ExpressionVisitor visitor);
     }
 }
