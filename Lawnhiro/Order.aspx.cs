@@ -82,12 +82,6 @@ namespace Lawnhiro
                     queryString["zip"] = place.PostalCode;
                     queryString["placeId"] = place.PlaceId;
 
-                    string couponCode = txt_couponCode.Text;
-
-                    if (!string.IsNullOrWhiteSpace(couponCode))
-                    {
-                        queryString["couponCode"] = couponCode;
-                    }
                     string script = $"javascript:window.open('ConfirmOrder.aspx?{queryString}&couponCode=' + document.getElementById('{txt_couponCode.ClientID}').value);";
                     btn_placeOrder.OnClientClick = script;
                 }
@@ -98,6 +92,7 @@ namespace Lawnhiro
         {
             div_orderConfirmation.Visible = false;
             addressPicker.Text = "";
+            txt_couponCode.Text = "";
         }
 
         protected void btn_placeOrder_Click(object sender, EventArgs e)
