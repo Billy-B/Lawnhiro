@@ -43,7 +43,7 @@ namespace Lawnhiro.API
         [Column]
         public bool Admin { get; set; }
         [Column]
-        public bool SendNotifications { get; set; }
+        public bool NotificationsEnabled { get; set; }
 
         public override string ToString()
         {

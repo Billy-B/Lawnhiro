@@ -11,16 +11,48 @@ namespace BB.Measure
     {
         const char SUPERSCRIPT_MINUS = '⁻';
 
-        public abstract MeasurementDimensions Dimensions { get; }
+        //public abstract Unit GetBaseSIRepresentation();
+
         internal abstract double SIConversion { get; }
 
-        internal abstract Unit Inverse();
+        internal abstract string Abbreviation { get; }
 
-        /*internal abstract Unit Multiply(Unit value);
-        internal abstract Unit MultiplySI(SIUnit value);
-        internal abstract Unit MultiplyNonSI(NonSIUnit value);
-        internal abstract Unit MultiplyDimensionless(DimensionlessUnit value);
-        internal abstract Unit MultiplyConstructed(ConstructedUnit value);*/
+        private static Dictionary<string, Unit> _stringMapper = new Dictionary<string, Unit>();
+
+        internal Unit Inverse()
+        {
+            Dictionary<Unit, int> construction = Construction;
+            Dictionary<Unit, int> newConstruction = new Dictionary<Unit, int>();
+            foreach (var kvp in construction)
+            {
+                newConstruction.Add(kvp.Key, -kvp.Value);
+            }
+            return Build(newConstruction, -Dimensions);
+        }
+
+        
+
+        internal virtual Dictionary<Unit, int> Construction
+        {
+            get
+            {
+                return new Dictionary<Unit, int> { { this, 1 } };
+            }
+        }
+
+        public abstract MeasurementDimensions Dimensions { get; }
+
+        internal Unit() { }
+
+        public static Unit FromString(string unit)
+        {
+            Unit ret;
+            if (!_stringMapper.TryGetValue(unit, out ret))
+            {
+                throw new ArgumentException("\"" + unit + "\" is not a valid unit.");
+            }
+            throw new NotImplementedException();
+        }
 
         public static Unit DefineUnit(string name, Unit equivalentUnit)
         {
@@ -37,23 +69,86 @@ namespace BB.Measure
             throw new NotImplementedException();
         }
 
-        public static readonly Unit Metre = new SIUnit(MeasurementDimensions.Length);
-        public static readonly Unit Second = new SIUnit(MeasurementDimensions.Time);
-        public static readonly Unit Kilogram = new SIUnit(MeasurementDimensions.Mass);
-        public static readonly Unit Kelvin = new SIUnit(MeasurementDimensions.Temperature);
-        public static readonly Unit Ampere = new SIUnit(MeasurementDimensions.Current);
-        public static readonly Unit Mole = new SIUnit(MeasurementDimensions.SubstanceAmount);
-        public static readonly Unit Candela = new SIUnit(MeasurementDimensions.LuminousIntensity);
+        internal static Unit Build(Dictionary<Unit, int> construction, MeasurementDimensions dimensions)
+        {
+            switch (construction.Count)
+            {
+                case 0:
+                    return ONE;
+                case 1:
+                    var kvp = construction.Single();
+                    if (kvp.Value == 1)
+                    {
+                        return kvp.Key;
+                    }
+                    break;
+            }
+            return new ConstructedUnit(construction, dimensions);
+        }
 
-        
+        public static readonly Unit Metre = SIBaseUnit("metre", "m", MeasurementDimensions.Length);
+        public static readonly Unit Second = SIBaseUnit("second", "s", MeasurementDimensions.Time);
+        public static readonly Unit Kilogram = SIBaseUnit("kilogram", "kg", MeasurementDimensions.Mass);
+        public static readonly Unit Kelvin = SIBaseUnit("kelvin", "K", MeasurementDimensions.Temperature);
+        public static readonly Unit Ampere = SIBaseUnit("ampere", "A", MeasurementDimensions.Current);
+        public static readonly Unit Mole = SIBaseUnit("mole", "mol", MeasurementDimensions.SubstanceAmount);
+        public static readonly Unit Candela = SIBaseUnit("candela", "cd", MeasurementDimensions.LuminousIntensity);
 
-        internal class SIUnit : Unit
+        internal static readonly Unit ONE = new BaseUnit("one", "one", MeasurementDimensions.Zero, 1);
+
+        internal static Unit SIBaseUnit(string name, string abbreviation, MeasurementDimensions dimension)
+        {
+            return new BaseUnit(name, abbreviation, dimension, 1);
+        }
+
+        internal class BaseUnit : Unit
+        {
+            internal string _name;
+            internal string _abbreviation;
+            internal double _siConversion;
+            internal MeasurementDimensions _dimensions;
+
+            internal BaseUnit(string name, string abbreviation, MeasurementDimensions dimensions, double siConversion)
+            {
+                _name = name;
+                _abbreviation = abbreviation;
+                _dimensions = dimensions;
+                _siConversion = siConversion;
+            }
+
+            public override MeasurementDimensions Dimensions
+            {
+                get { return _dimensions; }
+            }
+
+            internal override double SIConversion
+            {
+                get { return _siConversion; }
+            }
+
+            internal override string Abbreviation
+            {
+                get { return _abbreviation; }
+            }
+
+            public override string ToString()
+            {
+                return _name;
+            }
+        }
+
+        /*internal class SIBaseUnit : Unit
         {
             internal readonly MeasurementDimensions _dimensions;
             internal readonly int _dimRad;
             internal readonly int _dimSr;
 
-            public SIUnit(MeasurementDimensions dimensions, int dimRad = 0, int dimSr = 0)
+            public override Unit GetBaseSIRepresentation()
+            {
+                return this;
+            }
+
+            public SIBaseUnit(MeasurementDimensions dimensions, int dimRad = 0, int dimSr = 0)
             {
                 _dimensions = dimensions;
                 _dimRad = dimRad;
@@ -72,12 +167,12 @@ namespace BB.Measure
 
             internal override Unit Inverse()
             {
-                return new SIUnit(-_dimensions, -_dimRad, -_dimSr);
+                return new SIBaseUnit(-_dimensions, -_dimRad, -_dimSr);
             }
 
             /*internal override Unit Multiply(Unit value)
             {
-                return value.MultiplySI(this);
+                return value.MultiplySIBase(this);
             }
 
             internal override Unit MultiplyConstructed(ConstructedUnit value)
@@ -102,10 +197,10 @@ namespace BB.Measure
                 }
                 if (construction.Count == 1 && construction.Single().Value == 0)
                 {
-                    return new DimensionlessUnit()
+                    //return new DimensionlessUnit()
                 }
             }
-            */
+            
             public override string ToString()
             {
                 MeasurementDimensions dim = _dimensions;
@@ -125,14 +220,55 @@ namespace BB.Measure
             }
         }
 
+        internal class SIDerrivedUnit : Unit
+        {
+            private string _name;
+            internal SIBaseUnit _equivalentUnit;
+
+            internal SIDerrivedUnit(string name, SIBaseUnit equivalentUnit)
+            {
+                _name = name;
+                _equivalentUnit = equivalentUnit;
+            }
+
+            internal override double SIConversion
+            {
+                get { return 1; }
+            }
+
+            public override Unit GetBaseSIRepresentation()
+            {
+                return _equivalentUnit;
+            }
+
+            internal override Unit Inverse()
+            {
+                Dictionary<Unit, int> construction = new Dictionary<Unit, int>
+                {
+                    { this, -1 }
+                };
+                return new ConstructedUnit(construction, -_equivalentUnit.Dimensions);
+            }
+
+            public override MeasurementDimensions Dimensions
+            {
+                get { return _equivalentUnit._dimensions; }
+            }
+
+            public override string ToString()
+            {
+                return _name;
+            }
+        }*/
+
         internal class ScaledUnit : Unit
         {
-            internal Unit _baseUnit;
+            internal Unit _unitToScale;
             internal double _scaleFactor;
 
-            internal ScaledUnit(Unit baseUnit, double scaleFactor)
+            internal ScaledUnit(Unit unitToScale, double scaleFactor)
             {
-                _baseUnit = baseUnit;
+                _unitToScale = unitToScale;
                 _scaleFactor = scaleFactor;
             }
 
@@ -191,7 +327,7 @@ namespace BB.Measure
 
             public override MeasurementDimensions Dimensions
             {
-                get { return _baseUnit.Dimensions; }
+                get { return _unitToScale.Dimensions; }
             }
 
             internal override double SIConversion
@@ -199,52 +335,21 @@ namespace BB.Measure
                 get { return _scaleFactor; }
             }
 
-            internal override Unit Inverse()
+            internal override string Abbreviation
             {
-                return new ScaledUnit(_baseUnit.Inverse(), 1 / _scaleFactor);
+                get { return ToString(); }
             }
 
             public override string ToString()
             {
-                double log = Math.Log(_scaleFactor);
+                double log = Math.Log10(_scaleFactor);
                 int intLog = (int)log;
                 string prefix = null;
                 if (log == intLog && intLog >= -24 && intLog <= 24)
                 {
                     prefix = _prefixes[intLog + 24];
                 }
-                return (prefix ?? (_scaleFactor + "*")) + _baseUnit;
-            }
-        }
-
-        internal class NonSIUnit : Unit
-        {
-            internal readonly double _siConversion;
-            internal readonly SIUnit _dimensionallyEquivalentUnit;
-
-            internal NonSIUnit(double siConversion, SIUnit dimensionallyEquivalentUnit)
-            {
-                _siConversion = siConversion;
-                _dimensionallyEquivalentUnit = dimensionallyEquivalentUnit;
-            }
-
-            public override MeasurementDimensions Dimensions
-            {
-                get { return _dimensionallyEquivalentUnit.Dimensions; }
-            }
-
-            internal override double SIConversion
-            {
-                get { return _siConversion; }
-            }
-
-            internal override Unit Inverse()
-            {
-                Dictionary<Unit, int> construction = new Dictionary<Unit, int>
-                {
-                    { this, -1 }
-                };
-                return new ConstructedUnit(construction, -Dimensions);
+                return (prefix ?? (_scaleFactor + "*")) + _unitToScale.Abbreviation;
             }
         }
 
@@ -252,18 +357,19 @@ namespace BB.Measure
         {
             internal readonly Dictionary<Unit, int> _construction;
             internal double? _siConversion;
-            internal MeasurementDimensions _dim;
+            internal MeasurementDimensions _dimensions;
 
-            internal ConstructedUnit(Dictionary<Unit, int> construction, MeasurementDimensions dim)
+            internal ConstructedUnit(Dictionary<Unit, int> construction, MeasurementDimensions dimensions)
             {
                 _construction = construction;
-                _dim = dim;
+                _dimensions = dimensions;
             }
 
             public override MeasurementDimensions Dimensions
             {
-                get { return _dim; }
+                get { return _dimensions; }
             }
+
             internal override double SIConversion
             {
                 get
@@ -285,27 +391,19 @@ namespace BB.Measure
                 }
             }
 
-            internal override Unit Inverse()
+            internal override Dictionary<Unit, int> Construction
             {
-                Dictionary<Unit, int> construction = new Dictionary<Unit, int>();
-                foreach (var kvp in _construction)
-                {
-                    construction.Add(kvp.Key, -kvp.Value);
-                }
-                if (construction.Count == 1)
-                {
-                    var kvp = construction.Single();
-                    if (kvp.Value == 1)
-                    {
-                        return kvp.Key;
-                    }
-                }
-                return new ConstructedUnit(construction, -_dim);
+                get { return _construction; }
+            }
+
+            internal override string Abbreviation
+            {
+                get { return ToString(); }
             }
 
             public override string ToString()
             {
-                return FormatHelpers.FormatPowerNotation(_construction.Select(kvp => new KeyValuePair<string, int>(kvp.Key.ToString(), kvp.Value)));
+                return FormatHelpers.FormatPowerNotation(_construction.Select(kvp => new KeyValuePair<string, int>(kvp.Key.Abbreviation, kvp.Value)));
             }
         }
 
@@ -440,7 +538,7 @@ namespace BB.Measure
         private static readonly Dictionary<OrderlessDouble<Unit>, Unit> _productMapper = new Dictionary<OrderlessDouble<Unit>, Unit>();
         private static readonly Dictionary<Tuple<Unit, Unit>, Unit> _quotientMapper = new Dictionary<Tuple<Unit, Unit>, Unit>();
 
-        internal class DimensionlessUnit : Unit
+        /*internal class DimensionlessUnit : Unit
         {
 
             public override MeasurementDimensions Dimensions
@@ -465,11 +563,16 @@ namespace BB.Measure
                 return new DimensionlessUnit(1 / _value);
             }
 
+            public override Unit GetBaseSIRepresentation()
+            {
+                throw new InvalidOperationException();
+            }
+
             public override string ToString()
             {
                 return _value.ToString();
             }
-        }
+        }*/
 
         private class OrderlessDouble<T>
         {
@@ -497,10 +600,14 @@ namespace BB.Measure
             {
                 throw new ArgumentNullException();
             }
+            if (scalar == 1)
+            {
+                return unit;
+            }
             ScaledUnit asScaled = unit as ScaledUnit;
             if (asScaled != null)
             {
-                return new ScaledUnit(asScaled._baseUnit, asScaled._scaleFactor * scalar);
+                return new ScaledUnit(asScaled._unitToScale, asScaled._scaleFactor * scalar);
             }
             else
             {
@@ -524,12 +631,15 @@ namespace BB.Measure
 
         public static explicit operator double(Unit unit)
         {
-            DimensionlessUnit d = unit as DimensionlessUnit;
-            if (d == null)
+            if (unit == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (unit.Dimensions != MeasurementDimensions.Zero)
             {
                 throw new InvalidCastException("Cannot cast unit " + unit + " to double because it is not dimensionless.");
             }
-            return d._value;
+            return unit.SIConversion;
         }
 
         public static Unit operator *(Unit left, Unit right)
@@ -542,29 +652,42 @@ namespace BB.Measure
             {
                 throw new ArgumentNullException("divisor");
             }
-            SIUnit leftAsSI = left as SIUnit;
-            if (leftAsSI != null)
+            if (left == ONE)
             {
-                SIUnit rightAsSI = right as SIUnit;
-                if (right != null)
+                return right;
+            }
+            if (right == ONE)
+            {
+                return left;
+            }
+            Dictionary<Unit, int> leftConstruction = left.Construction;
+            Dictionary<Unit, int> rightConstruction = right.Construction;
+            Dictionary<Unit, int> newConstruction = new Dictionary<Unit, int>(leftConstruction);
+            foreach (var kvp in rightConstruction)
+            {
+                Unit unit = kvp.Key;
+                int exp = kvp.Value;
+                if (newConstruction.ContainsKey(unit))
                 {
-                    return Multiply(leftAsSI, rightAsSI);
+                    int newExp = newConstruction[unit] + exp;
+                    if (newExp == 0)
+                    {
+                        newConstruction.Remove(unit);
+                    }
+                    else
+                    {
+                        newConstruction[unit] = newExp;
+                    }
                 }
-                DimensionlessUnit rightAsDimensionless = right as DimensionlessUnit;
-                if (right != null)
+                else
                 {
-                    return Multiply(leftAsSI, rightAsDimensionless);
-                }
-                ConstructedUnit rightAsConstructed = right as ConstructedUnit;
-                if (rightAsConstructed != null)
-                {
-
+                    newConstruction.Add(unit, exp);
                 }
             }
-            throw new NotImplementedException();
+            return Build(newConstruction, left.Dimensions + right.Dimensions);
         }
 
-        internal static Unit Multiply(SIUnit u1, SIUnit u2)
+        /*internal static Unit Multiply(SIBaseUnit u1, SIBaseUnit u2)
         {
             MeasurementDimensions dim = u1.Dimensions + u2.Dimensions;
             int dimRad = u1._dimRad + u2._dimRad;
@@ -575,11 +698,11 @@ namespace BB.Measure
             }
             else
             {
-                return new SIUnit(dim, dimRad, dimSr);
+                return new SIBaseUnit(dim, dimRad, dimSr);
             }
         }
 
-        internal static Unit Multiply(SIUnit siUnit, DimensionlessUnit dimensionlessUnit)
+        internal static Unit Multiply(SIBaseUnit siUnit, DimensionlessUnit dimensionlessUnit)
         {
             double mul = dimensionlessUnit._value;
             if (mul == 1)
@@ -644,7 +767,7 @@ namespace BB.Measure
                 return new DimensionlessUnit(1);
             }
             return new ConstructedUnit(newConstruction, u2.Dimensions + u2.Dimensions);
-        }
+        }*/
 
         public static Unit operator /(Unit dividend, Unit divisor)
         {
@@ -659,7 +782,7 @@ namespace BB.Measure
             return dividend * divisor.Inverse();
         }
 
-        internal static Unit Divide(SIUnit dividend, SIUnit divisor)
+        /*internal static Unit Divide(SIBaseUnit dividend, SIBaseUnit divisor)
         {
             MeasurementDimensions dim = dividend.Dimensions - divisor.Dimensions;
             int dimRad = dividend._dimRad - divisor._dimRad;
@@ -670,7 +793,7 @@ namespace BB.Measure
             }
             else
             {
-                return new SIUnit(dim, dimRad, dimSr);
+                return new SIBaseUnit(dim, dimRad, dimSr);
             }
         }
 

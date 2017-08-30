@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -237,6 +238,44 @@ namespace BB.Measure
                 }
             }
             return Create(value1 / value2, dim1 - dim2);
+        }
+
+        public static T Create<T>(double value, Unit unit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static T Create<T>(double value, string unit)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static string Format(ValueType measurement, string format, IFormatProvider formatProvider)
+        {
+            if (formatProvider == null)
+            {
+                formatProvider = CultureInfo.CurrentCulture;
+            }
+            NumberFormatInfo numberFormat = formatProvider as NumberFormatInfo;
+            CultureInfo culture = formatProvider as CultureInfo;
+            if (numberFormat == null)
+            {
+                numberFormat = NumberFormatInfo.CurrentInfo;
+            }
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+            return Format(measurement, format, numberFormat, culture);
+        }
+        internal static string Format(ValueType measurement, string format, NumberFormatInfo numberFormat, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+            RegionInfo region = new RegionInfo(culture.LCID);
+            if (region.IsMetric)
+            {
+
+            }
         }
 
         private static bool tryConvertDouble(ValueType value, out double doubleVal)

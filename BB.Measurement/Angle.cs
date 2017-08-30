@@ -6,15 +6,26 @@ using System.Threading.Tasks;
 
 namespace BB.Measure
 {
-    public struct Angle : IEquatable<Angle>, IComparable<Angle>
+    public struct Angle : IComparable<Angle>
     {
+        public static readonly Angle Zero = new Angle();
+
+        public static readonly Unit Degree;
+        public static readonly Unit Radian;
+        public static readonly Unit Gradian;
+        public static readonly Unit Minute;
+        public static readonly Unit Second;
+
         internal double _value;
 
         internal Angle(double value)
         {
             _value = value;
         }
-
+        public static double operator /(Angle dividend, Angle divisor)
+        {
+            return dividend._value / divisor._value;
+        }
         public static Angle operator +(Angle left, Angle right)
         {
             return new Angle(left._value + right._value);
@@ -34,6 +45,14 @@ namespace BB.Measure
         public static Angle operator /(Angle value, double div)
         {
             return new Angle(value._value / div);
+        }
+        public static Angle operator -(Angle value)
+        {
+            return new Angle(-value._value);
+        }
+        public static Angle operator +(Angle value)
+        {
+            return value;
         }
         public static bool operator ==(Angle left, Angle right)
         {
@@ -72,11 +91,6 @@ namespace BB.Measure
         public int CompareTo(Angle other)
         {
             return _value.CompareTo(other._value);
-        }
-
-        bool IEquatable<Angle>.Equals(Angle other)
-        {
-            return this == other;
         }
 
         internal const double DEGREES = Math.PI / 180;
