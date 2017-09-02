@@ -30,8 +30,6 @@ namespace BB.Measure
             return Build(newConstruction, -Dimensions);
         }
 
-        
-
         internal virtual Dictionary<Unit, int> Construction
         {
             get

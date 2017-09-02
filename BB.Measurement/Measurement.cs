@@ -250,6 +250,11 @@ namespace BB.Measure
             throw new NotImplementedException();
         }
 
+        internal static MeasurementDimensions GetDimensions(Type measurementType)
+        {
+            return _indexedByType[measurementType].Dimensions;
+        }
+
         internal static string Format(ValueType measurement, string format, IFormatProvider formatProvider)
         {
             if (formatProvider == null)

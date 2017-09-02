@@ -9,7 +9,53 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <BB:PlacePicker ID="placePicker1" runat="server" GoogleAPIKey="AIzaSyAxJqkqEcfHvornc9l38rrrZ53iux1X2lY" />
+                <div id="paypal-button">
+                </div>
+        <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+            <script src="../Scripts/jquery-3.2.1.min.js"></script>
+            <script type="text/javascript" async="async">
+                paypal.Button.render(
+                {
+                    env: 'sandbox', // Specify 'sandbox' for the test environment, 'production'
+
+                    client: {
+                        sandbox: 'AeL5Z6IirMijkry6LzbZ8aS9E47B0AH2tHizjdJxrvMprG6X93w7w5I1zjJYQsOkYKzF0ZWLt5CcpkJ-',
+                        production: 'AZyOmu5y4n9XGmYgARgR3KB4Slw-hDqh0uqfEKsfsASZTVAbpnTvmLKx6LTdDE6-BVq2dC85w4Xxm1k_'
+                    },
+
+                    payment: function (price) {
+                        // Set up the payment here, when the buyer clicks on the button
+                        if (true) {
+                            var env = this.props.env;
+                            var client = this.props.client;
+                            orderAmount = 52;
+                            //alert(orderAmount);
+                            return paypal.rest.payment.create(env, client, {
+                                transactions: [
+                                    {
+                                        amount: { total: orderAmount, currency: 'USD' }
+                                    }
+                                ]
+                            });
+                        }
+                        else {
+                            return false;
+                        }
+                    },
+
+                    commit: true,
+
+                    onAuthorize: function (data, actions) {
+                        // Execute the payment here, when the buyer approves the transaction
+                        return actions.payment.execute().then(function () {
+                            //alert(JSON.stringify(data));
+                            //document.getElementById('paypalOrderId').value = data.paymentID;
+                            //__doPostBack('paypalOrderId', 'ValueChanged');
+                            alert('Your order has been submitted! Stay tuned for email updates.');
+                        });
+                    }
+                }, '#paypal-button');
+            </script>
     </div>
     </form>
 </body>

@@ -115,6 +115,7 @@
     <Content Include="Order.aspx" />
     <Content Include="PayPalTest.aspx" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.js" />
     <Content Include="w3c\p3p.xml" />
     <None Include="w3c\policy.p3p" />
     <Content Include="Web.config" />
