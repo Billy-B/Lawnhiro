@@ -2,3 +2,4 @@ C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Release\BB.Mea
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\bin\Release\BB.Measure.pdb
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measure.dll
 C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measure.pdb
+C:\Users\Ryker\Documents\Repositories\Lawnhiro\BB.Measurement\obj\Release\BB.Measure.csprojResolveAssemblyReference.cache
