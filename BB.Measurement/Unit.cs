@@ -9,10 +9,6 @@ namespace BB.Measure
 {
     public abstract class Unit
     {
-        const char SUPERSCRIPT_MINUS = '⁻';
-
-        //public abstract Unit GetBaseSIRepresentation();
-
         internal abstract double SIConversion { get; }
 
         internal abstract string Abbreviation { get; }
@@ -52,14 +48,9 @@ namespace BB.Measure
             throw new NotImplementedException();
         }
 
-        public static Unit DefineUnit(string name, Unit equivalentUnit)
+        public static Unit Create(string name, string abbreviation, Unit equivalentUnit)
         {
-            throw new NotImplementedException();
-        }
-
-        public static Unit DefineUnit<TMeasurement>(string name, double siConversion)
-        {
-            throw new NotImplementedException();
+            return new BaseUnit(name, abbreviation, equivalentUnit.Dimensions, equivalentUnit.SIConversion);
         }
 
         public static Unit DefineUnit(string name, MeasurementDimensions dimensions, double siConversion)
@@ -526,15 +517,6 @@ namespace BB.Measure
         public static readonly Unit Day = DefineUnit<Time>("day", DAY);
         public static readonly Unit Week = DefineUnit<Time>("day", DAY);
         public static readonly Unit Year = DefineUnit<Time>("year", YEAR);*/
-
-        public string Name { get; private set; }
-
-        public MeasurementSystem System { get; private set; }
-
-        internal string[] _abbreviations;
-
-        private static readonly Dictionary<OrderlessDouble<Unit>, Unit> _productMapper = new Dictionary<OrderlessDouble<Unit>, Unit>();
-        private static readonly Dictionary<Tuple<Unit, Unit>, Unit> _quotientMapper = new Dictionary<Tuple<Unit, Unit>, Unit>();
 
         /*internal class DimensionlessUnit : Unit
         {

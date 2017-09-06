@@ -32,11 +32,6 @@ namespace BB.Measure
         public void AddUnit(Unit unit, Type measurementType)
         {
             assertValidMeasurementType(measurementType);
-        }
-
-        public void SetDefault(Unit unit, Type measurementType)
-        {
-            assertValidMeasurementType(measurementType);
             MeasurementDimensions unitDim = unit.Dimensions;
             MeasurementDimensions typeDim = Measurement.GetDimensions(measurementType);
             if (unitDim != typeDim)
@@ -70,7 +65,6 @@ namespace BB.Measure
             public Type MeasurementType { get; internal set; }
             public Unit StandardUnit { get; internal set; }
             public ICollection<Unit> Units { get; internal set; }
-            internal readonly MeasurementDimensions _dimensions;
 
             private Dictionary<string, Unit> _indexedByAbbreviation;
         }
@@ -127,9 +121,9 @@ namespace BB.Measure
             }
         }
 
-        public object GetFormat(Type formatType)
+        object IFormatProvider.GetFormat(Type formatType)
         {
-            throw new NotImplementedException();
+            return this;
         }
 
         public class SIUnitSystem : UnitSystem

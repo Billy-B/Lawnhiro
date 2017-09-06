@@ -63,6 +63,7 @@
     <Compile Include="Temperature.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Unit.cs" />
+    <Compile Include="Unit2.cs" />
     <Compile Include="UnitSystem.cs" />
     <Compile Include="Volume.cs" />
   </ItemGroup>

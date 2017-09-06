@@ -185,17 +185,20 @@ namespace Lawnhiro
 
 #if !DEBUG
             Provider[] providersToNotify = Repository.Query<Provider>().Where(p => p.City == order.Residence.City && p.State == order.Residence.State && p.NotificationsEnabled).ToArray();
-            MailMessage noticicationMessage = new MailMessage
+            if (providersToNotify.Any())
             {
-                From = fromAddress,
-                Subject = "Lawnhiro - order recieved",
-                Body = $"This is an automatic notification. An order has been received from {order.Residence.Address}."
-            };
-            foreach (Provider provider in providersToNotify)
-            {
-                noticicationMessage.To.Add(provider.Email);
+                MailMessage noticicationMessage = new MailMessage
+                {
+                    From = fromAddress,
+                    Subject = "Lawnhiro - order recieved",
+                    Body = $"This is an automatic notification. An order has been received from {order.Residence.Address}."
+                };
+                foreach (Provider provider in providersToNotify)
+                {
+                    noticicationMessage.To.Add(provider.Email);
+                }
+                smtp.Send(noticicationMessage);
             }
-            smtp.Send(noticicationMessage);
 #endif
         }
     }
